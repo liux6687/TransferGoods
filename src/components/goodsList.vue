@@ -1,6 +1,5 @@
 <template>
   <div class="goods">
-    <Title title="商品" subtitle="列表"></Title>
     <div class="filter">
       <span>过滤：</span>
       <Dropdown trigger="click" style="margin-left: 20px">
@@ -54,8 +53,6 @@
 </template>
 
 <script>
-  import Title from '@/components/Title'
-
   export default {
     name: "goodsList",
     data() {
@@ -152,7 +149,6 @@
       }
     },
     components: {
-      Title
     }
   }
 </script>

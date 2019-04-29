@@ -38,8 +38,12 @@
 </template>
 <style>
 	.slide {
-		width: 240px;
-		height: 100%;
+		width: 100%;
+		min-height: 800px;
+		background:#EAEDF1;
+	}
+	.ivu-menu.ivu-menu-dark.ivu-menu-vertical {
+		width: 100%;;
 	}
 </style>
 <script>
