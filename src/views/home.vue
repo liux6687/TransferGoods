@@ -6,7 +6,7 @@
 				<Slide></Slide>
 			</Col>
 			<Col span="21">
-				<Title title="首页" subtitle="店铺设置"></Title>
+				<Title :title="this.$store.state.title" :subtitle="this.$store.state.subtitle"></Title>
 				<router-view></router-view>
 			</Col>
 		</Row>

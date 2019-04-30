@@ -1,38 +1,15 @@
 <template>
    <div class="slide">
-	   <Menu active-name="1-1" :open-names="['1']" theme="dark">
-	       <Submenu name="1">
+	   <Menu active-name="home-setting" @on-select="menu" :open-names="['home']" theme="dark">
+	       <Submenu name="home">
 	           <template slot="title">
 	               <Icon type="ios-paper" />
 	               首页
 	           </template>
-	           <MenuItem name="1-1">店铺设置</MenuItem>
-	           <MenuItem name="1-2">商品列表</MenuItem>
-	           <MenuItem name="1-3">价格修改记录</MenuItem>
+	           <MenuItem to="/setting" name="home-setting">店铺设置</MenuItem>
+	           <MenuItem to="/goodsList" name="home-goodsList">商品列表</MenuItem>
+	           <MenuItem to="/record" name="home-record">价格修改记录</MenuItem>
 	       </Submenu>
-	      <!-- <Submenu name="2">
-	           <template slot="title">
-	               <Icon type="ios-people" />
-	               用户管理
-	           </template>
-	           <MenuItem name="2-1">新增用户</MenuItem>
-	           <MenuItem name="2-2">活跃用户</MenuItem>
-	       </Submenu> -->
-	      <!-- <Submenu name="3">
-	           <template slot="title">
-	               <Icon type="ios-stats" />
-	               统计分析
-	           </template>
-	           <MenuGroup title="使用">
-	               <MenuItem name="3-1">新增和启动</MenuItem>
-	               <MenuItem name="3-2">活跃分析</MenuItem>
-	               <MenuItem name="3-3">时段分析</MenuItem>
-	           </MenuGroup>
-	           <MenuGroup title="留存">
-	               <MenuItem name="3-4">用户留存</MenuItem>
-	               <MenuItem name="3-5">流失用户</MenuItem>
-	           </MenuGroup>
-	       </Submenu> -->
 	   </Menu>
    </div>
 </template>
@@ -47,5 +24,32 @@
 	}
 </style>
 <script>
-
+	export default {
+		data() {
+			return {
+				pageTitle: {
+					home: "首页"
+				},
+				subPageTitle: {
+					setting: "设置",
+					goodsList: "商品列表",
+					record: "价格修改记录"
+				}
+			}
+		},
+		methods: {
+			menu(e) {
+				let menu = e.split("-")[0];
+				let submenu = e.split("-")[1];
+				let pageTitle = this.$data.pageTitle[menu];
+				let subPageTitle = this.$data.subPageTitle[submenu];
+				let obj = {
+					pageTitle,
+					subPageTitle
+				}
+				// 向全局设置标题
+				this.$store.dispatch("sendTitle", obj)
+			}
+		}
+	}
 </script>
