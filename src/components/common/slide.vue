@@ -20,7 +20,7 @@
 		background:#EAEDF1;
 	}
 	.ivu-menu.ivu-menu-dark.ivu-menu-vertical {
-		width: 100%;;
+		width: 100%!important;
 	}
 </style>
 <script>
