@@ -6,14 +6,13 @@ import router from './router'
 import axios from 'axios'
 import store from "./store/store.js"
 import iView from "iview";
-import { Switch } from 'iview'
-Vue.component('i-switch', Switch)
 import 'iview/dist/styles/iview.css'    // 使用 CSS
 import "./common/style/base.css"
 
 Vue.use(iView);
 Vue.prototype.$http = axios;
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
+import "../my-theme/index.less"
 
 /* eslint-disable no-new */
 new Vue({
