@@ -8,8 +8,8 @@ export default new Vuex.Store({
 	state: {
 		token: "",
 		userInfo: "",
-		title: "首页",
-		subtitle: "设置"
+		title: "",
+		subtitle: ""
 	},
 	// 计算属性
 	getters: {

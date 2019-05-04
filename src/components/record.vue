@@ -32,7 +32,7 @@
 			</Col>
 		</Row>
 		<p class="text">注意: 改价记录只保留最近30天的</p>
-		<Table border :columns="columns" :data="data"></Table>
+		<Table :columns="columns" :data="data"></Table>
 	</div>
 </template>
 <style scoped lang="less">

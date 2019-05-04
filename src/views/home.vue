@@ -30,6 +30,35 @@
 			Header,
 			Slide,
 			Title
+		},
+		methods: {
+			unDateTitle() {
+				let path = this.$route.matched[1].path.substr(1).split("/")[0];
+				let pageTitle = "首页";
+				let subPageTitle = "";
+				switch(path) {
+					case "goodsList":
+					subPageTitle = "商品列表";
+					break;
+					case "setting": 
+					subPageTitle = "设置";
+					break;
+					case "record":
+					subPageTitle = "价格修改记录";
+					break;
+					default : 
+					subPageTitle = "";
+				}
+				let obj = {
+					pageTitle,
+					subPageTitle
+				}
+				// 向全局设置标题
+				this.$store.dispatch("sendTitle", obj)
+			}
+		},
+		mounted() {
+			this.unDateTitle()
 		}
 	}
 </script>
