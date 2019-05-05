@@ -7,7 +7,17 @@
 <script>
   export default {
     name: "Title",
-    props: ['title', 'subtitle']
+		data() {
+			return {
+
+			}
+		},
+		props:["title", "subtitle"],
+		methods: {
+			
+		},
+		mounted() {
+		}
   }
 </script>
 

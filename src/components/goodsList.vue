@@ -1,51 +1,3 @@
-<style scoped lang="less">
-  .goods {
-    padding: 15px;
-
-    .filter {
-      background-color: #e7e7e7;
-      padding: 12px;
-      color: #333;
-
-      .filter-left {
-        float: left;
-        margin-top: 10px;
-      }
-
-      a {
-        color: #333;
-      }
-
-      .ivu-form-inline .ivu-form-item {
-        margin-bottom: 0;
-      }
-
-      .md-search {
-        font-size: 18px;
-      }
-    }
-
-    .info-text {
-      color: #DD5A43;
-      margin-top: 20px;
-      margin-bottom: 5px;
-    }
-
-    .filter-class {
-      background-color: #e1f1fd;
-
-      a {
-        color: #999999;
-      }
-    }
-
-    .page {
-      text-align: right;
-      margin-top: 20px;
-    }
-  }
-</style>
-
 <template>
   <div class="goods" v-if="goods.length">
     <div class="filter">
@@ -186,7 +138,44 @@
     </div>
   </div>
 </template>
-
+<style scoped lang="less">
+  .goods {
+    padding: 15px;
+    .filter {
+      background-color: #e7e7e7;
+      padding: 12px;
+      color: #333;
+      .filter-left {
+        float: left;
+        margin-top: 10px;
+      }
+      a {
+        color: #333;
+      }
+      .ivu-form-inline .ivu-form-item {
+        margin-bottom: 0;
+      }
+      .md-search {
+        font-size: 18px;
+      }
+    }
+    .info-text {
+      color: #DD5A43;
+      margin-top: 20px;
+      margin-bottom: 5px;
+    }
+    .filter-class {
+      background-color: #e1f1fd;
+      a {
+        color: #999999;
+      }
+    }
+    .page {
+      text-align: right;
+      margin-top: 20px;
+    }
+  }
+</style>
 <script>
   export default {
     name: "goodsList",
@@ -413,7 +402,7 @@
       }
     },
     created() {
-      this.$http.get('http://localhost:3000/api/goods').then(res => {
+      this.$http.get('static/data.json').then(res => {
         this.goods = res.data.data;
         this.totalCount = this.goods.length;
       });
