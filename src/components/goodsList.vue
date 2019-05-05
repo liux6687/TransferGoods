@@ -127,9 +127,12 @@
     </div>
     <Table :row-class-name="rowClassName" stripe border :columns="columns1" :data="data1"
            @on-select="oneSelect"
-           @on-select-all="selectALL" @on-selection-change="changeSelect"></Table>
+           @on-select-all="selectALL"
+           @on-selection-change="changeSelect"
+           @on-filter-change="filterChange"
+    ></Table>
     <div class="page">
-      <Page :current="9" :show-total="true" :show-sizer="true" :page-size-opts="[10, 20, 30, 40]" placement="bottom"
+      <Page :current="1" :show-total="true" :show-sizer="true" :page-size-opts="[10, 20, 30, 40]" placement="bottom"
             :show-elevator="true"
             @on-change="pageChange" @on-page-size-change="sizeChange" :total="totalCount"/>
     </div>
@@ -214,7 +217,6 @@
             align: 'center',
             width: '400',
             render: (h, params) => {
-              // console.log(params.index);
               return h('div', [
                 h('p', {
                   style: {
@@ -321,7 +323,7 @@
                       float: 'right',
                       marginTop: '5px'
                     },
-                    attr: {
+                    attrs: {
                       href: `https://cw.tosneaker.com/store/goods-binding-edit/${this.getData(params.index, 'id')}`
                     },
                     class: ['ivu-icon', 'ivu-icon-md-create']
@@ -343,25 +345,6 @@
                   h('span', {}, `${this.getData(params.index, 'sku_num')}`)
                 ])
               ])
-            },
-            filterMultiple: false,
-            filters: [
-              {
-                label: '已绑定',
-                value: 1
-              },
-              {
-                label: '未绑定',
-                value: 2
-              }
-            ],
-            filterMethod(value, row) {
-              console.log(row.isBind);
-              if (value === 1) {
-                return row.is_bind === 1;
-              } else if (value === 2) {
-                return row.is_bind === 0;
-              }
             }
           },
           {
@@ -371,25 +354,6 @@
             align: 'center',
             render: (h, params) => {
               return h('p', {}, `${this.getData(params.index, 'is_start') === 1 ? '启动' : '未启动'}`)
-            },
-            filters: [
-              {
-                label: '已启动',
-                value: 1
-              },
-              {
-                label: '未启动',
-                value: 2
-              }
-            ],
-            filterMultiple: false,
-            filterMethod(value, row) {
-              console.log(row.changePrice);
-              if (value === 1) {
-                return row.is_start === 1;
-              } else if (value === 2) {
-                return row.is_start === 0;
-              }
             }
           },
           {
@@ -473,6 +437,9 @@
       },
       getData(index, attr) {
         return this.goods[index][attr];
+      },
+      filterChange(data) {
+        console.log(data);
       }
     },
     components: {}
