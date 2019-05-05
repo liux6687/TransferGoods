@@ -1,5 +1,6 @@
 <template>
 	<div class="record">
+		<cardTitle :titlePath="titlePath"></cardTitle>
 		<Row class="filter">
 			<Col class="select" span="2">
 				<Select v-model="filter" style="width:100%">
@@ -40,7 +41,7 @@
 </template>
 <style scoped lang="less">
 	.record {
-		padding: 0 20px;
+		// padding: 0 20px;
 		.text {
 			color: red;
 		}
@@ -68,6 +69,7 @@
 	}
 </style>
 <script>
+	import cardTitle from "@/components/common/Title.vue"
 	export default {
 		data() {
 			return {
@@ -128,8 +130,20 @@
 						key: "error_message",
 					}
 				],
-				data: []
+				data: [],
+				titlePath: [
+					{
+						menuName: "首页",
+						name: ''
+					},
+					{
+						name: "价格修改记录"
+					}
+				]
 			}
+		},
+		components:{
+			cardTitle
 		},
 		methods: {
 			// 条件筛选提交按钮

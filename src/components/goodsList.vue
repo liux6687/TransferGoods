@@ -1,146 +1,149 @@
 <template>
-  <div class="goods" v-if="goods.length">
-    <div class="filter">
-      <div class="filter-left">
-        <span>过滤：</span>
-        <Dropdown trigger="click" style="margin-left: 20px">
-          <a href="javascript:void(0)">
-            是否已绑定
-            <Icon type="ios-arrow-down"></Icon>
-          </a>
-          <DropdownMenu slot="list">
-            <DropdownItem>已绑定</DropdownItem>
-            <DropdownItem>未绑定</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-        <Dropdown trigger="click" style="margin-left: 20px">
-          <a href="javascript:void(0)">
-            是否已启动
-            <Icon type="ios-arrow-down"></Icon>
-          </a>
-          <DropdownMenu slot="list">
-            <DropdownItem>已启动</DropdownItem>
-            <DropdownItem>未启动</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-        <Dropdown trigger="click" style="margin-left: 20px">
-          <a>
-            清除条件
-          </a>
-        </Dropdown>
-      </div>
-      <Form ref="formInline" :model="formInline" :rules="ruleInline" inline
-            :style="{display: 'inline-block',float: 'right'}">
-        <FormItem prop="key">
-          <Input type="text" v-model="formInline.key" placeholder="模糊搜索">
-          </Input>
-        </FormItem>
-        <FormItem>
-          <Button type="primary" @click="handleSubmit('formInline')">
-            <Icon class="md-search" type="md-search"/>
-            搜索
-          </Button>
-        </FormItem>
-      </Form>
-      <div style="clear: both;"></div>
-    </div>
-    <div class="info-text">注意：您的绑定上限数量为 9999，现在您已绑定了 58 个（货号/颜色）【到期时间：2019-07-11 15:59:59】</div>
-    <div class="filter filter-class">
-      <Dropdown trigger="click" style="margin-left: 20px">
-        <Button href="javascript:void(0)">
-          一键改价
-          <Icon type="ios-arrow-down"></Icon>
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem>驴打滚</DropdownItem>
-          <DropdownItem>炸酱面</DropdownItem>
-          <DropdownItem>豆汁儿</DropdownItem>
-          <DropdownItem>冰糖葫芦</DropdownItem>
-          <DropdownItem>北京烤鸭</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px">
-        <Button href="javascript:void(0)">
-          启动改价
-          <Icon type="ios-arrow-down"></Icon>
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem>驴打滚</DropdownItem>
-          <DropdownItem>炸酱面</DropdownItem>
-          <DropdownItem>豆汁儿</DropdownItem>
-          <DropdownItem>冰糖葫芦</DropdownItem>
-          <DropdownItem>北京烤鸭</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px">
-        <Button href="javascript:void(0)">
-          只改涨不改跌
-          <Icon type="ios-arrow-down"></Icon>
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem>驴打滚</DropdownItem>
-          <DropdownItem>炸酱面</DropdownItem>
-          <DropdownItem>豆汁儿</DropdownItem>
-          <DropdownItem>冰糖葫芦</DropdownItem>
-          <DropdownItem>北京烤鸭</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px">
-        <Button href="javascript:void(0)">
-          价尾取消改9
-          <Icon type="ios-arrow-down"></Icon>
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem>驴打滚</DropdownItem>
-          <DropdownItem>炸酱面</DropdownItem>
-          <DropdownItem>豆汁儿</DropdownItem>
-          <DropdownItem>冰糖葫芦</DropdownItem>
-          <DropdownItem>北京烤鸭</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px">
-        <Button href="javascript:void(0)">
-          同步淘宝店商品
-          <Icon type="ios-arrow-down"></Icon>
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem>驴打滚</DropdownItem>
-          <DropdownItem>炸酱面</DropdownItem>
-          <DropdownItem>豆汁儿</DropdownItem>
-          <DropdownItem>冰糖葫芦</DropdownItem>
-          <DropdownItem>北京烤鸭</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px">
-        <Button href="javascript:void(0)">
-          手动上新
-          <Icon type="ios-arrow-down"></Icon>
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem>驴打滚</DropdownItem>
-          <DropdownItem>炸酱面</DropdownItem>
-          <DropdownItem>豆汁儿</DropdownItem>
-          <DropdownItem>冰糖葫芦</DropdownItem>
-          <DropdownItem>北京烤鸭</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-    </div>
-    <Table :row-class-name="rowClassName" stripe border :columns="columns1" :data="data1"
-           @on-select="oneSelect"
-           @on-select-all="selectALL"
-           @on-selection-change="changeSelect"
-           @on-filter-change="filterChange"
-    ></Table>
-    <div class="page">
-      <Page :current="1" :show-total="true" :show-sizer="true" :page-size-opts="[10, 20, 30, 40]" placement="bottom"
-            :show-elevator="true"
-            @on-change="pageChange" @on-page-size-change="sizeChange" :total="totalCount"/>
-    </div>
-  </div>
+	<div>
+		<cardTitle :titlePath="titlePath"></cardTitle>
+		<div class="goods" v-if="goods.length">
+		  <div class="filter">
+		    <div class="filter-left">
+		      <span>过滤：</span>
+		      <Dropdown trigger="click" style="margin-left: 20px">
+		        <a href="javascript:void(0)">
+		          是否已绑定
+		          <Icon type="ios-arrow-down"></Icon>
+		        </a>
+		        <DropdownMenu slot="list">
+		          <DropdownItem>已绑定</DropdownItem>
+		          <DropdownItem>未绑定</DropdownItem>
+		        </DropdownMenu>
+		      </Dropdown>
+		      <Dropdown trigger="click" style="margin-left: 20px">
+		        <a href="javascript:void(0)">
+		          是否已启动
+		          <Icon type="ios-arrow-down"></Icon>
+		        </a>
+		        <DropdownMenu slot="list">
+		          <DropdownItem>已启动</DropdownItem>
+		          <DropdownItem>未启动</DropdownItem>
+		        </DropdownMenu>
+		      </Dropdown>
+		      <Dropdown trigger="click" style="margin-left: 20px">
+		        <a>
+		          清除条件
+		        </a>
+		      </Dropdown>
+		    </div>
+		    <Form ref="formInline" :model="formInline" :rules="ruleInline" inline
+		          :style="{display: 'inline-block',float: 'right'}">
+		      <FormItem prop="key">
+		        <Input type="text" v-model="formInline.key" placeholder="模糊搜索">
+		        </Input>
+		      </FormItem>
+		      <FormItem>
+		        <Button type="primary" @click="handleSubmit('formInline')">
+		          <Icon class="md-search" type="md-search"/>
+		          搜索
+		        </Button>
+		      </FormItem>
+		    </Form>
+		    <div style="clear: both;"></div>
+		  </div>
+		  <div class="info-text">注意：您的绑定上限数量为 9999，现在您已绑定了 58 个（货号/颜色）【到期时间：2019-07-11 15:59:59】</div>
+		  <div class="filter filter-class">
+		    <Dropdown trigger="click" style="margin-left: 20px">
+		      <Button href="javascript:void(0)">
+		        一键改价
+		        <Icon type="ios-arrow-down"></Icon>
+		      </Button>
+		      <DropdownMenu slot="list">
+		        <DropdownItem>驴打滚</DropdownItem>
+		        <DropdownItem>炸酱面</DropdownItem>
+		        <DropdownItem>豆汁儿</DropdownItem>
+		        <DropdownItem>冰糖葫芦</DropdownItem>
+		        <DropdownItem>北京烤鸭</DropdownItem>
+		      </DropdownMenu>
+		    </Dropdown>
+		    <Dropdown trigger="click" style="margin-left: 20px">
+		      <Button href="javascript:void(0)">
+		        启动改价
+		        <Icon type="ios-arrow-down"></Icon>
+		      </Button>
+		      <DropdownMenu slot="list">
+		        <DropdownItem>驴打滚</DropdownItem>
+		        <DropdownItem>炸酱面</DropdownItem>
+		        <DropdownItem>豆汁儿</DropdownItem>
+		        <DropdownItem>冰糖葫芦</DropdownItem>
+		        <DropdownItem>北京烤鸭</DropdownItem>
+		      </DropdownMenu>
+		    </Dropdown>
+		    <Dropdown trigger="click" style="margin-left: 20px">
+		      <Button href="javascript:void(0)">
+		        只改涨不改跌
+		        <Icon type="ios-arrow-down"></Icon>
+		      </Button>
+		      <DropdownMenu slot="list">
+		        <DropdownItem>驴打滚</DropdownItem>
+		        <DropdownItem>炸酱面</DropdownItem>
+		        <DropdownItem>豆汁儿</DropdownItem>
+		        <DropdownItem>冰糖葫芦</DropdownItem>
+		        <DropdownItem>北京烤鸭</DropdownItem>
+		      </DropdownMenu>
+		    </Dropdown>
+		    <Dropdown trigger="click" style="margin-left: 20px">
+		      <Button href="javascript:void(0)">
+		        价尾取消改9
+		        <Icon type="ios-arrow-down"></Icon>
+		      </Button>
+		      <DropdownMenu slot="list">
+		        <DropdownItem>驴打滚</DropdownItem>
+		        <DropdownItem>炸酱面</DropdownItem>
+		        <DropdownItem>豆汁儿</DropdownItem>
+		        <DropdownItem>冰糖葫芦</DropdownItem>
+		        <DropdownItem>北京烤鸭</DropdownItem>
+		      </DropdownMenu>
+		    </Dropdown>
+		    <Dropdown trigger="click" style="margin-left: 20px">
+		      <Button href="javascript:void(0)">
+		        同步淘宝店商品
+		        <Icon type="ios-arrow-down"></Icon>
+		      </Button>
+		      <DropdownMenu slot="list">
+		        <DropdownItem>驴打滚</DropdownItem>
+		        <DropdownItem>炸酱面</DropdownItem>
+		        <DropdownItem>豆汁儿</DropdownItem>
+		        <DropdownItem>冰糖葫芦</DropdownItem>
+		        <DropdownItem>北京烤鸭</DropdownItem>
+		      </DropdownMenu>
+		    </Dropdown>
+		    <Dropdown trigger="click" style="margin-left: 20px">
+		      <Button href="javascript:void(0)">
+		        手动上新
+		        <Icon type="ios-arrow-down"></Icon>
+		      </Button>
+		      <DropdownMenu slot="list">
+		        <DropdownItem>驴打滚</DropdownItem>
+		        <DropdownItem>炸酱面</DropdownItem>
+		        <DropdownItem>豆汁儿</DropdownItem>
+		        <DropdownItem>冰糖葫芦</DropdownItem>
+		        <DropdownItem>北京烤鸭</DropdownItem>
+		      </DropdownMenu>
+		    </Dropdown>
+		  </div>
+		  <Table :row-class-name="rowClassName" stripe border :columns="columns1" :data="data1"
+		         @on-select="oneSelect"
+		         @on-select-all="selectALL"
+		         @on-selection-change="changeSelect"
+		         @on-filter-change="filterChange"
+		  ></Table>
+		  <div class="page">
+		    <Page :current="1" :show-total="true" :show-sizer="true" :page-size-opts="[10, 20, 30, 40]" placement="bottom"
+		          :show-elevator="true"
+		          @on-change="pageChange" @on-page-size-change="sizeChange" :total="totalCount"/>
+		  </div>
+		</div>
+	</div>
 </template>
 <style scoped lang="less">
   .goods {
-    padding: 15px;
+    // padding: 15px;
     .filter {
       background-color: #e7e7e7;
       padding: 12px;
@@ -177,10 +180,20 @@
   }
 </style>
 <script>
+	import cardTitle from "@/components/common/Title.vue"
   export default {
     name: "goodsList",
     data() {
       return {
+				titlePath: [
+					{
+						menuName: "首页",
+						name: ""
+					},
+					{
+						name: "商品列表"
+					}
+				],
         goods: [],
         totalCount: 0,
         columns1: [
@@ -324,8 +337,13 @@
                       marginTop: '5px'
                     },
                     attrs: {
-                      href: `https://cw.tosneaker.com/store/goods-binding-edit/${this.getData(params.index, 'id')}`
+                      href: "javascript: void(0)"
                     },
+										on: {
+							click: () => {
+												this.bindShop(this.getData(params.index, 'id'))
+											}
+										},
                     class: ['ivu-icon', 'ivu-icon-md-create']
                   }),
                   h('div', {
@@ -408,6 +426,14 @@
       });
     },
     methods: {
+			bindShop(id) {
+				this.$router.push({
+					path: "/shopEdit",
+					params: {
+						id
+					}
+				})
+			},
       oneSelect(e) {
         console.log(e)
       },
@@ -442,6 +468,8 @@
         console.log(data);
       }
     },
-    components: {}
+    components: {
+			cardTitle
+		}
   }
 </script>

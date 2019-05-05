@@ -16,9 +16,22 @@ export default new Router({
 		component: resolve => require(['@/views/home'], resolve),
 		children: [
 			{
-				path: "/goodsList",
-				name: "GoodsList",
-				component: resolve => require(['@/components/goodsList'], resolve)
+				path: "/goods",
+				name: "Goods",
+				component: resolve => require(['@/components/goods'], resolve),
+				redirect: "/goodsList",
+				children: [
+					{
+						path: "/goodsList",
+						name: "GoodsList",
+						component: resolve => require (['@/components/goodsList'],resolve)
+					},
+					{
+						path: "/shopEdit",
+						name: "ShopEdit",
+						component: resolve => require (['@/components/shopEdit'],resolve)
+					}
+				]
 			},
 			{
 				path: "/setting",

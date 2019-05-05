@@ -1,6 +1,10 @@
 <template>
   <div class="title">
-    <h1>{{title}}</h1>&gt;&gt;<span>{{subtitle}}</span>
+   <span v-for="(item, index) in titlePath" :key="index">
+		 <span>{{item.menuName}}</span>
+		 <span v-if="item.name != ''">&gt;&gt;</span>
+		 <span v-if="titlePath.length > 1">{{item.name}}</span>
+	 </span>
   </div>
 </template>
 
@@ -12,7 +16,7 @@
 
 			}
 		},
-		props:["title", "subtitle"],
+		props:["titlePath"],
 		methods: {
 			
 		},
@@ -25,20 +29,10 @@
   .title {
     margin: 0 0 12px;
     border-bottom: 1px dotted #E2E2E2;
-    padding-bottom: 16px;
-    padding-top: 7px;
-    h1 {
-      margin: 0 8px;
-      font-size: 24px;
-      font-weight: lighter;
-      color: #2679B5;
-      display: inline-block;
-    }
+    padding:16px 0;
     span {
-      margin: 0 6px;
-      font-size: 14px;
-      font-weight: 400;
-      color: #8089A0;
+      font-size: 16px;
+      color: #2679B5;
     }
   }
 </style>
