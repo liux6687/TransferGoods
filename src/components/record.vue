@@ -32,7 +32,7 @@
 			</Col>
 		</Row>
 		<p class="text">注意: 改价记录只保留最近30天的</p>
-		<Table :columns="columns" :data="data"></Table>
+		<Table border :columns="columns" :data="data"></Table>
 	</div>
 </template>
 <style scoped lang="less">
@@ -79,7 +79,8 @@
 							return h("div",{
 								style: {
 									lineHeight: "20px",
-									fontSize: "14px"
+									fontSize: "14px",
+									width: "500px"
 								}
 							},[
 								h("p",{},"商品：" + params.row.item.name),

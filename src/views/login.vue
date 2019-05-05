@@ -2,7 +2,7 @@
 	<!-- 结构部分 -->
 	<div class="login">
 		这个是登陆页
-		<router-link to="/home">去首页</router-link>
+		<router-link to="/goodsList">去首页</router-link>
 	</div>
 </template>
 <style scoped lang="less">

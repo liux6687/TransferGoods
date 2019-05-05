@@ -52,6 +52,7 @@
 				this.$store.dispatch("sendTitle", obj)
 			},
 			updateMenu() {
+				console.log(this.$route)
 				let path = this.$route.matched[1].path;
 				let parentPath = this.$route.matched[1].parent.name.toLowerCase();
 				if(parentPath != "") {
