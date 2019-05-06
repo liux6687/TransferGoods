@@ -3,17 +3,17 @@
 		<div class="select-main">
 			<div class="searchBtn">
 				<Button class="btn" @click="isShow">
-					{{text}}
+					{{text_}}
 				</Button>
 				<Icon :type="show==true?'ios-arrow-up':'ios-arrow-down'" />
 			</div>
-			<div class="showBox" v-if="show">
+			<div class="showBox">
 				<div class="search-input-box">
 					<input class="search-input" type="text" @input="isSearch" v-model="isSearchData">
 				</div>
 				<p class="prompt" v-if="data.length <= 0">{{isSearchData != ''? "暂无数据":"请输入搜索关键字"}}</p>
 				<ul v-else class="goodsList">
-					<li @click="li_select(index)" class="list-item" v-for="(item, index) in data" :key="index">{{item.name}}</li>
+					<li @click="li_select(index,$event)" class="list-item" v-for="(item, index) in data" :key="index">{{item.name}}</li>
 				</ul>
 			</div>
 		</div>
@@ -24,22 +24,32 @@
 	export default {
 		data() {
 			return {
-				text: "fgjkghfjk",
+				text_: "",
 				show: false,
 				isSearchData: "",
 				data: []
 			}
 		},
+		props:["text"],
 		methods: {
-			isShow() {
-				this.$data.show = !this.$data.show;
-				if(this.$data.show == true) {
+			isShow(e) {
+				let dom = e.target;
+				if($(dom).parents(".select").find(".showBox").hasClass("active")) {
+					$(dom).parents(".select").find(".showBox").removeClass("active");
+				}else {
+					$(".showBox").removeClass("active")
+					$(dom).parents(".select").find(".showBox").addClass("active");
 					this.$data.isSearchData = "";
 					this.$data.data = [];
 				}
+				let this_ = this;
+				document.addEventListener("click", function(e) {
+					if (!(event.target).closest('.select')) {
+						$(".showBox").removeClass("active")
+					}
+				})
 			},
 			isSearch() {
-				console.log(this.$data.isSearchData)
 				if(this.$data.isSearchData != "") {
 					this.$http.get("static/data1.json").then((res) => {
 						console.log(res)
@@ -50,9 +60,16 @@
 				}
 				
 			},
-			li_select(index) {
-				this.$data.text = this.$data.data[index].name;
-				this.$data.show = false;
+			li_select(index, e) {
+				let dom = e.target;
+				$(dom).parents(".select").find(".showBox").removeClass("active")
+				this.$data.text_ = this.$data.data[index].name;
+			}
+		},
+		mounted() {
+			console.log(this.$props.text)
+			if(this.$props.text) {
+				this.$data.text_ = this.$props.text
 			}
 		}
 	}
@@ -65,13 +82,14 @@
 	}
 	.select-main {
 		width: 100%;
-		position: absolute;
-		z-index: 999;
 	}
 	.showBox {
 		line-height: 1;
 		border: 1px solid #0000FF;
 		background: #fff;
+		position: absolute;
+		z-index: 999;
+		display: none;
 	}
 	.search-input-box {
 		padding: 5px;
@@ -86,6 +104,7 @@
 		width: 100%;
 		.btn {
 			width: 100%;
+			height: 34px;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			overflow: hidden;
@@ -107,8 +126,12 @@
 	.prompt {
 		height: 34px;
 		line-height: 24px;
+		font-size: 12px;
 		padding: 5px;
 		box-sizing: border-box;
+	}
+	.active {
+		display: block;
 	}
 	.searchBtn  {
 		position: relative;
