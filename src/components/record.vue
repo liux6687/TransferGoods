@@ -1,5 +1,6 @@
 <template>
 	<div class="record">
+		<cardTitle :titlePath="titlePath"></cardTitle>
 		<Row class="filter">
 			<Col class="select" span="2">
 				<Select v-model="filter" style="width:100%">
@@ -33,11 +34,14 @@
 		</Row>
 		<p class="text">注意: 改价记录只保留最近30天的</p>
 		<Table border :columns="columns" :data="data"></Table>
+		<div class="pages fr">
+			<Page :total="100" show-elevator prev-text="上一页" next-text="下一页" @on-change="page_change"></Page>
+		</div>
 	</div>
 </template>
 <style scoped lang="less">
 	.record {
-		padding: 0 20px;
+		// padding: 0 20px;
 		.text {
 			color: red;
 		}
@@ -59,10 +63,13 @@
 		.price_interval {
 			margin-left: 30px;
 		}
-		
+		.pages {
+			margin-top: 20px;
+		}
 	}
 </style>
 <script>
+	import cardTitle from "@/components/common/Title.vue"
 	export default {
 		data() {
 			return {
@@ -74,13 +81,12 @@
 					{
 						title: "商品名称",
 						key: "item",
-						width: 400,
+						width: 500,
 						render: (h, params) => {
 							return h("div",{
 								style: {
 									lineHeight: "20px",
 									fontSize: "14px",
-									width: "500px"
 								}
 							},[
 								h("p",{},"商品：" + params.row.item.name),
@@ -124,13 +130,27 @@
 						key: "error_message",
 					}
 				],
-				data: []
+				data: [],
+				titlePath: [
+					{
+						menuName: "首页",
+						name: ''
+					},
+					{
+						name: "价格修改记录"
+					}
+				]
 			}
 		},
+		components:{
+			cardTitle
+		},
 		methods: {
+			// 条件筛选提交按钮
 			submit() {
 				console.log(1111)
 			},
+			// 表格渲染函数
 			setName(index) {
 				return this.$data.data[index].sku_name
 			},
@@ -151,7 +171,11 @@
 					break
 				}
 				return str
- 			}
+ 			},
+			// 分页
+			page_change(e) {
+				console.log(e)
+			}
 		},
 		created() {
 			this.$http.get("static/record.json").then((res) => {

@@ -1,5 +1,6 @@
 <template>
   <div class="goods">
+    <card-title :title-path="titlePath"></card-title>
     <div class="filter">
       <div class="filter-left">
         <span>过滤：</span>
@@ -125,8 +126,7 @@
 </template>
 <style scoped lang="less">
   .goods {
-    padding: 15px;
-
+    // padding: 15px;
     .filter {
       background-color: #e7e7e7;
       padding: 12px;
@@ -196,10 +196,21 @@
 <script>
   import {saveToLocal, loadFromLocal} from '../common/js/store'
 
+	import cardTitle from "@/components/common/Title.vue"
   export default {
     name: "goodsList",
     data() {
       return {
+				titlePath: [
+					{
+						menuName: "首页",
+						name: ""
+					},
+					{
+						name: "商品列表"
+					}
+				],
+        goods: [],
         totalCount: 0,
         loading: true,
         checkOption: [],
@@ -347,8 +358,13 @@
                       marginTop: '5px'
                     },
                     attrs: {
-                      href: `https://cw.tosneaker.com/store/goods-binding-edit/${this.getData(params.index, 'id')}`
+                      href: "javascript: void(0)"
                     },
+										on: {
+							click: () => {
+												this.bindShop(this.getData(params.index, 'id'))
+											}
+										},
                     class: ['ivu-icon', 'ivu-icon-md-create']
                   }),
                   h('div', {
@@ -446,6 +462,14 @@
       }
     },
     methods: {
+			bindShop(id) {
+				this.$router.push({
+					path: "/shopEdit",
+					params: {
+						id
+					}
+				})
+			},
       oneSelect(e) {
         this.checkOption = e;
         console.log(this.checkOption)
@@ -612,6 +636,7 @@
       clearStore() {
         window.localStorage.clear();
         this.current = 1;
+        this.store = [];
         this.$http.get('/api/shop/1').then(res => {
           this.loading = false;
           this.data1 = res.data.arr;
@@ -631,6 +656,8 @@
       addNew(name) {
       }
     },
-    components: {}
+    components: {
+			cardTitle
+		}
   }
 </script>
