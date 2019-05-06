@@ -8,6 +8,7 @@ import store from "./store/store.js"
 import iView from "iview";
 import 'iview/dist/styles/iview.css'    // 使用 CSS
 import "./common/style/base.css"
+import "jquery"
 
 Vue.use(iView);
 Vue.prototype.$http = axios;

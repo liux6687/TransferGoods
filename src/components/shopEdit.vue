@@ -1,6 +1,5 @@
 <template>
 	<div class="shopEdit">
-		<selectBox></selectBox>
 		<cardTitle :titlePath="titlePath"></cardTitle>
 		<div class="shopEdit-content">
 			<Card>
@@ -22,9 +21,7 @@
 										<Row>
 											<Col span="8">对应货号:</Col>
 											<Col span="16">
-												<select>
-													<option><input></input></option>
-												</select>
+												<selectBox></selectBox>
 											</Col>
 										</Row>
 									</Col>

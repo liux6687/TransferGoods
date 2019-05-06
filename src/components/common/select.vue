@@ -1,21 +1,122 @@
 <template>
 	<div class="select">
-		<Button @click="show">
-			fgfdjkgkjfdh
-			<Icon type="ios-arrow-down" />
-		</Button>
+		<div class="select-main">
+			<div class="searchBtn">
+				<Button class="btn" @click="isShow">
+					{{text}}
+				</Button>
+				<Icon :type="show==true?'ios-arrow-up':'ios-arrow-down'" />
+			</div>
+			<div class="showBox" v-if="show">
+				<div class="search-input-box">
+					<input class="search-input" type="text" @input="isSearch" v-model="isSearchData">
+				</div>
+				<p class="prompt" v-if="data.length <= 0">{{isSearchData != ''? "暂无数据":"请输入搜索关键字"}}</p>
+				<ul v-else class="goodsList">
+					<li @click="li_select(index)" class="list-item" v-for="(item, index) in data" :key="index">{{item.name}}</li>
+				</ul>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
 	export default {
+		data() {
+			return {
+				text: "fgjkghfjk",
+				show: false,
+				isSearchData: "",
+				data: []
+			}
+		},
 		methods: {
-			show() {
+			isShow() {
+				this.$data.show = !this.$data.show;
+				if(this.$data.show == true) {
+					this.$data.isSearchData = "";
+					this.$data.data = [];
+				}
+			},
+			isSearch() {
+				console.log(this.$data.isSearchData)
+				if(this.$data.isSearchData != "") {
+					this.$http.get("static/data1.json").then((res) => {
+						console.log(res)
+						this.$data.data = res.data.data;
+					})
+				}else {
+					this.$data.data = []
+				}
 				
+			},
+			li_select(index) {
+				this.$data.text = this.$data.data[index].name;
+				this.$data.show = false;
 			}
 		}
 	}
 </script>
 
-<style>
+<style scoped lang="less">
+	.select {
+		position: relative;
+		width: 100%;
+	}
+	.select-main {
+		width: 100%;
+		position: absolute;
+		z-index: 999;
+	}
+	.showBox {
+		line-height: 1;
+		border: 1px solid #0000FF;
+		background: #fff;
+	}
+	.search-input-box {
+		padding: 5px;
+		.search-input {
+			width: 100%;
+			height: 100%;
+			height: 34px;
+		}
+	}
+	
+	.searchBtn {
+		width: 100%;
+		.btn {
+			width: 100%;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+	}
+	.list-item:hover {
+		background: #C0C0C0;
+		cursor: pointer;
+	}
+	.goodsList {
+		max-height: 200px;
+		overflow-y: scroll;
+	}
+	.list-item {
+		line-height: 1;
+		margin-bottom: 8px;
+		padding: 0px 8px 0px 5px;
+	}
+	.prompt {
+		height: 34px;
+		line-height: 24px;
+		padding: 5px;
+		box-sizing: border-box;
+	}
+	.searchBtn  {
+		position: relative;
+	}
+	.searchBtn i {
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
 </style>
