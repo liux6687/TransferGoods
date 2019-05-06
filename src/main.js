@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import $ from 'jquery'
 import store from "./store/store.js"
 import iView from "iview";
 import 'iview/dist/styles/iview.css'    // 使用 CSS
@@ -11,6 +12,7 @@ import "./common/style/base.css"
 
 Vue.use(iView);
 Vue.prototype.$http = axios;
+Vue.prototype.jQuery = $;
 Vue.config.productionTip = false;
 import "../my-theme/index.less"
 
@@ -18,7 +20,7 @@ import "../my-theme/index.less"
 new Vue({
   el: '#app',
   router,
-	store,
-  components: { App },
+  store,
+  components: {App},
   template: '<App/>'
 })

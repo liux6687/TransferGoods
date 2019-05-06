@@ -1,79 +1,4 @@
-<template>
-  <div id="app">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="right" ref="right">
-          <div>
-            <img src="../assets/images/zidong.png" alt="自动改价" class="zidong">
-          </div>
-          <div>
-            <img src="../assets/images/Automaticpricechange.png" alt="自动改价" class="autoimg">
-          </div>
-          <div class="icons">
-            <img src="../assets/images/24-2.png" alt="自动改价" class="gai-1"/>
-            <img src="../assets/images/cao-2.png" alt="自动改价" class="gai-2">
-            <img src="../assets/images/gai-2.png" alt="自动改价" class="gai-3">
-          </div>
-        </div>
-        <div class="left">
-          <div>
-            <img src="../assets/images/Login.png" alt="登录" class="login">
-          </div>
-          <div>
-            <img src="../assets/images/font-1.png" alt="登录" class="font-1">
-          </div>
-          <form method="post">
-            <div class="user" ref="divUser" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
-              <img src="../assets/images/user.png" alt="用户" class="user-img"/>
-              <input type="text" name="user" id="user" placeholder="请输入用户名或手机号" ref="user"/>
-            </div>
-            <div class="pass" ref="divPass" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
-              <img src="../assets/images/pass.png" alt="密码" class="pass-img"/>
-              <input :type="pass" name="pass" id="pass" placeholder="请输入密码" ref="pass"/>
-              <img src="../assets/images/hide-pass.png" alt="显示密码" class="hide-pass-img" @mousedown.left="passDown"
-                   @mouseup.left="passUp"/>
-            </div>
-            <input type="button" class="sub-btn" value="登录" @click="login"/>
-          </form>
-          <a
-            href="https://oauth.taobao.com/authorize?response_type=code&client_id=23763997&redirect_uri=http://api.taoesoft.com/caiwu.aspx&view=web&state=https%3A%2F%2Fcw.tosneaker.com%2Fstore%2Fcallback%3Fact%3Dbindshop_do"><img
-            src="../assets/images/taobao2.png" alt="淘宝" class="taobao-img"></a>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script>
-  export default {
-    name: "login",
-    data() {
-      return {
-        pass: 'password'
-      }
-    },
-    methods: {
-      passDown() {
-        this.pass = 'text';
-      },
-      passUp() {
-        this.pass = 'password';
-      }
-    }
-  }
-</script>
-
 <style scoped lang="less">
-  html,
-  body {
-    width: 100%;
-    height: 100%;
-    font-size: 14px;
-    font-family: 'microsoft yahei';
-    overflow: hidden;
-  }
-
-  #app,
   .container-fluid,
   .row,
   .right,
@@ -82,13 +7,16 @@
   }
 
   .container-fluid {
+    position: absolute;
+    width: 100%;
+
     .row {
       display: flex;
     }
   }
 
   .right {
-    background-image: url(/assets/_layouts/store/img/bg.png);
+    background-image: url(../assets/images/bg.png);
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -173,7 +101,7 @@
     color: transparent;
     border: none;
     background-color: transparent;
-    background-image: url(/assets/_layouts/store/img/login-bg2.png);
+    background-image: url(../assets/images/login-bg2.png);
     cursor: pointer;
   }
 
@@ -190,3 +118,93 @@
     justify-content: space-around;
   }
 </style>
+
+<template>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="right" ref="right">
+        <div>
+          <img src="../assets/images/zidong.png" alt="自动改价" class="zidong">
+        </div>
+        <div>
+          <img src="../assets/images/Automaticpricechange.png" alt="自动改价" class="autoimg">
+        </div>
+        <div class="icons">
+          <img src="../assets/images/24-2.png" alt="自动改价" class="gai-1"/>
+          <img src="../assets/images/cao-2.png" alt="自动改价" class="gai-2">
+          <img src="../assets/images/gai-2.png" alt="自动改价" class="gai-3">
+        </div>
+      </div>
+      <div class="left">
+        <div>
+          <img src="../assets/images/Login.png" alt="登录" class="login">
+        </div>
+        <div>
+          <img src="../assets/images/font-1.png" alt="登录" class="font-1">
+        </div>
+        <form method="post">
+          <div class="user" ref="divUser" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+            <img src="../assets/images/user.png" alt="用户" class="user-img"/>
+            <input type="text" name="user" id="user" placeholder="请输入用户名或手机号" ref="user"/>
+          </div>
+          <div class="pass" ref="divPass" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+            <img src="../assets/images/pass.png" alt="密码" class="pass-img"/>
+            <input :type="pass" name="pass" id="pass" placeholder="请输入密码" ref="pass"/>
+            <img src="../assets/images/hide-pass.png" alt="显示密码" class="hide-pass-img" @mousedown.left="passDown"
+                 @mouseup.left="passUp"/>
+          </div>
+          <input type="button" class="sub-btn" value="登录"/>
+        </form>
+        <a
+          href="https://oauth.taobao.com/authorize?response_type=code&client_id=23763997&redirect_uri=http://api.taoesoft.com/caiwu.aspx&view=web&state=https%3A%2F%2Fcw.tosneaker.com%2Fstore%2Fcallback%3Fact%3Dbindshop_do"><img
+          src="../assets/images/taobao2.png" alt="淘宝" class="taobao-img"></a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "login",
+    data() {
+      return {
+        pass: 'password'
+      }
+    },
+    methods: {
+      passDown() {
+        this.pass = 'text';
+      },
+      passUp() {
+        this.pass = 'password';
+      },
+      adapt() {
+        if (window.innerHeight < 800) {
+          this.jQuery('.user').css({
+            'margin-top': '70px'
+          });
+          this.jQuery('.left').css({
+            'padding-top': '86px',
+          });
+          this.jQuery('.right').css({
+            'padding-top': '60px'
+          });
+        }
+        if (window.innerWidth <= 1440) {
+          this.jQuery('.left').css({
+            'padding-left': '100px'
+          });
+          this.jQuery('.right').css({
+            'padding-top': '60px'
+          });
+        }
+      }
+    },
+    mounted() {
+      this.adapt();
+      this.jQuery.resize(() => {
+        this.adapt();
+      });
+    }
+  }
+</script>
