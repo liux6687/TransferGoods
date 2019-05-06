@@ -85,11 +85,14 @@
 	}
 	.showBox {
 		line-height: 1;
-		border: 1px solid #0000FF;
+		border: 1px solid #000;
 		background: #fff;
 		position: absolute;
 		z-index: 999;
 		display: none;
+		width: 100%;
+		border-radius: 2px;
+		border-top: 0;
 	}
 	.search-input-box {
 		padding: 5px;
