@@ -202,7 +202,7 @@
     },
     mounted() {
       this.adapt();
-      this.jQuery.resize(() => {
+      this.jQuery('document').resize(() => {
         this.adapt();
       });
     }
