@@ -12,6 +12,7 @@ const portfinder = require('portfinder')
 const express = require('express')
 const app = new express()
 const data = require('../static/data.json')
+const data1 = require('../static/shopEdit.json')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
@@ -142,6 +143,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           totalPage: bindArr.length,
           arr
         })
+      });
+      app.get('/api/shopEdit', (req, res) => {
+        res.json(data1);
       });
     },
     clientLogLevel: 'warning',

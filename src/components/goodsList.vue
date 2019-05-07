@@ -101,7 +101,12 @@
         </Button>
       </Dropdown>
     </div>
-    <Table :loading="loading" no-data-text="暂无数据" :row-class-name="rowClassName" stripe border :columns="columns1"
+    <Table :loading="loading"
+           no-data-text="暂无数据"
+           :row-class-name="rowClassName"
+           stripe
+           border
+           :columns="columns1"
            :data="data1"
            @on-select="oneSelect"
            @on-select-all="selectALL"
