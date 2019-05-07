@@ -403,8 +403,14 @@
             render: (h, params) => {
               return h('a', {
                 attrs: {
-                  href: `https://cw.tosneaker.com/store/change-price-log?item_id=${this.getData(params.index, 'id')}`
-                }
+                  // href: `/#/record?item_id=${this.getData(params.index, 'id')}`
+									href: "javascript: void(0)"
+                },
+								on: {
+									click: () => {
+										this.lookInfo(params.index)
+									}
+								}
               }, '查看详细')
             }
           },
@@ -468,6 +474,12 @@
 					params: {
 						id
 					}
+				})
+			},
+			lookInfo(index) {
+				console.log(index)
+				this.$router.push({
+					path: '/record'
 				})
 			},
       oneSelect(e) {

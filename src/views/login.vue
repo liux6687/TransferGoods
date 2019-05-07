@@ -49,7 +49,7 @@
   }
 
   .user,
-  .pass {
+	.pass {
     border-bottom: 2px solid #010101;
     width: 510px;
     position: relative;
@@ -143,17 +143,17 @@
           <img src="../assets/images/font-1.png" alt="登录" class="font-1">
         </div>
         <form method="post">
-          <div class="user" ref="divUser" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+          <div class="user" ref="divUser">
             <img src="../assets/images/user.png" alt="用户" class="user-img"/>
             <input type="text" name="user" id="user" placeholder="请输入用户名或手机号" ref="user"/>
           </div>
-          <div class="pass" ref="divPass" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+          <div class="pass" ref="divPass">
             <img src="../assets/images/pass.png" alt="密码" class="pass-img"/>
             <input :type="pass" name="pass" id="pass" placeholder="请输入密码" ref="pass"/>
             <img src="../assets/images/hide-pass.png" alt="显示密码" class="hide-pass-img" @mousedown.left="passDown"
                  @mouseup.left="passUp"/>
           </div>
-          <input type="button" class="sub-btn" value="登录"/>
+          <input type="button" class="sub-btn" @click="login" value="登录"/>
         </form>
         <a
           href="https://oauth.taobao.com/authorize?response_type=code&client_id=23763997&redirect_uri=http://api.taoesoft.com/caiwu.aspx&view=web&state=https%3A%2F%2Fcw.tosneaker.com%2Fstore%2Fcallback%3Fact%3Dbindshop_do"><img
@@ -178,6 +178,15 @@
       passUp() {
         this.pass = 'password';
       },
+			// 登录按钮
+			login() {
+				this.$http.get("/api/goods").then((res) => {
+					console.log(res)
+				}) 
+				// this.$router.push({
+				// 	path: '/goodsList'
+				// })
+			},
       adapt() {
         if (window.innerHeight < 800) {
           this.jQuery('.user').css({
@@ -202,7 +211,7 @@
     },
     mounted() {
       this.adapt();
-      this.jQuery.resize(() => {
+      $(document).resize(() => {
         this.adapt();
       });
     }
