@@ -8,14 +8,13 @@
 			<div class="portrait fl">
 				<img src="" alt="">
 			</div>
-			<Dropdown class="name fl">
+			<Dropdown class="name fl"  @on-click="DropdownMenuClick">
 				<div class="name_text">
 					<small>Welcome,</small><br>
-					<span>好不容易凑够九个字</span>
+					<span>{{userInfo.name}}</span>
 				</div>
 				<DropdownMenu slot="list">
-					<DropdownItem>切换</DropdownItem>
-					<DropdownItem>退出</DropdownItem>
+					<DropdownItem name="quit">退出</DropdownItem>
 				</DropdownMenu>
 			</Dropdown>
 		</div>
@@ -66,3 +65,31 @@
 		}
 	}
 </style>
+<script type="text/javascript">
+	export default {
+		data() {
+			return {
+				userInfo: ""
+			}
+		},
+		methods:{
+			DropdownMenuClick(name) {
+				switch(name) {
+					case "quit":
+					sessionStorage.setItem("tokenInfo", "")
+					sessionStorage.setItem("userInfo", "")
+					this.$router.replace({
+						path: '/login'
+					})
+					break;
+				}
+			}
+		},
+		created() {
+			// this.$http.post("/api/refresh").then((res) => {
+			// 	console.log(res)
+			// })
+			this.$data.userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+		}
+	}
+</script>

@@ -145,11 +145,11 @@
         <form method="post">
           <div class="user" ref="divUser">
             <img src="../assets/images/user.png" alt="用户" class="user-img"/>
-            <input type="text" name="user" id="user" placeholder="请输入用户名或手机号" ref="user"/>
+            <input type="text" name="user" v-model="name" id="user" placeholder="请输入用户名或手机号" ref="user"/>
           </div>
           <div class="pass" ref="divPass">
             <img src="../assets/images/pass.png" alt="密码" class="pass-img"/>
-            <input :type="pass" name="pass" id="pass" placeholder="请输入密码" ref="pass"/>
+            <input :type="pass" name="pass" v-model="password" id="pass" placeholder="请输入密码" ref="pass"/>
             <img src="../assets/images/hide-pass.png" alt="显示密码" class="hide-pass-img" @mousedown.left="passDown"
                  @mouseup.left="passUp"/>
           </div>
@@ -168,7 +168,9 @@
     name: "login",
     data() {
       return {
-        pass: 'password'
+        pass: 'password',
+				name: "",
+				password: '',
       }
     },
     methods: {
@@ -180,12 +182,26 @@
       },
 			// 登录按钮
 			login() {
-				this.$http.get("/api/goods").then((res) => {
+				let obj = {
+					name: this.$data.name,
+					password: this.$data.password
+				}
+				this.$http.post("/api/login",obj).then((res) => {
 					console.log(res)
+					if(res.status == 200) {
+						if(res.data.status == 200) {
+							sessionStorage.setItem("tokenInfo", JSON.stringify(res.data.data.token_info))
+							sessionStorage.setItem("userInfo", JSON.stringify(res.data.data.user_info))
+							this.$router.replace({
+								path: '/goodsList'
+							})
+						}else {
+							alert(res.data.message)
+						}
+					}else {
+						alert(res.message)
+					}
 				}) 
-				// this.$router.push({
-				// 	path: '/goodsList'
-				// })
 			},
       adapt() {
         if (window.innerHeight < 800) {

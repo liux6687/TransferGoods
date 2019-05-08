@@ -5,7 +5,7 @@
 			<Card>
 				<p slot="title" @click="isReturn"><Icon style="margin: 0 3px;" type="ios-arrow-dropleft-circle" /><span>返回</span></p>
 				<div class="card-main">
-					<p class="shop-name">淘宝宝贝名称：<span class="name">{{data.name}}</span></p>
+					<p class="shop-name">淘宝宝贝名称：<span class="name">{{name}}</span></p>
 					<div class="sku-num clearfix">
 						<div class="fr">
 							<span class="text">已绑定sku个数</span>
@@ -15,37 +15,40 @@
 					<div>
 						<table style="width: 100%;">
 							<tr class="table-title" style="width: 100%;">
-								<td style="width: 20%;">
-									<span>颜色:</span>
-									<span>{{color}}</span>
-								</td>
-								<td style="width: 40%;">
-									<Col span="4">对应货号:</Col>
-									<Col span="20">
-										<selectBox></selectBox>
-									</Col>
-								</td>
-								<td style="width: 10%;">
-									<Col span="14">浮动比例:</Col>
-									<Col span="8"><Input></Input></Col>
-									<Col span="2">%</Col>
-								</td>
-								<td style="width: 20%;">
-									<span class="fl">出售价格按:</span>
-									<Dropdown class="fl" trigger="click">
-										 <Button class="select-dropdown" type="info">
-										   百分比
-										   <Icon type="ios-arrow-down"></Icon>
-										 </Button>
-										<DropdownMenu slot="list">
-											<DropdownItem>百分比</DropdownItem>
-											<DropdownItem>固定差额</DropdownItem>
-										</DropdownMenu>
-									</Dropdown>
-									<Input class="fl" style="width: 80px; line-height: 51px;"></Input>
-								</td>
-								<td style="width: 5%;">
-									<Button style="width: 80px;" type="success">批量设置</Button>
+								<td class="table-title-td" style="width: 100%;">
+									<div style="width: 250px;">
+										<span>颜色:</span>
+										<span>{{color}}</span>
+									</div>
+									<div style="width: 330px;">
+										<Col span="5">对应货号:</Col>
+										<Col span="19">
+											<selectBox></selectBox>
+										</Col>
+									</div>
+									<div style="width: 150px;">
+										<Col span="12">浮动比例:</Col>
+										<Col span="8"><Input></Input></Col>
+										<Col span="2">%</Col>
+									</div>
+									<div style="width: 250px;">
+										<span class="fl">出售价格按:</span>
+										<Dropdown class="fl" trigger="click">
+											 <Button class="select-dropdown" type="info">
+											   百分比
+											   <Icon type="ios-arrow-down"></Icon>
+											 </Button>
+											<DropdownMenu slot="list">
+												<DropdownItem>百分比</DropdownItem>
+												<DropdownItem>固定差额</DropdownItem>
+											</DropdownMenu>
+										</Dropdown>
+										<Input class="fl" style="width: 80px; line-height: 51px;"></Input>
+									</div>
+									<div class="table-btn-box" style="width: 180px; display: block;">
+										<Button style="width: 80px;" type="success">一键解绑</Button>
+										<Button style="width: 80px;" type="success">批量设置</Button>
+									</div>
 								</td>
 							</tr>
 						</table>
@@ -98,6 +101,8 @@
 	export default {
 		data() {
 			return {
+				name: "",
+				
 				data: '',
 				listData: [],
 				color: "",
@@ -127,11 +132,19 @@
 			}
 		},
 		created() {
-			this.$http.get("static/shopEdit.json").then((res)=> {
-				this.$data.data = res.data.data;
-				this.$data.listData = res.data.size;
-				this.$data.color = res.data.size[0].color; 
-				console.log(res)
+			this.$http.get("/api/goods-binding-edit/" + 4).then((res)=> {
+				this.$data.name = res.data.data.data.name;
+				let skus = res.data.data.data.skus;
+				console.log(skus)
+				let result = skus.reduce(function(initArray, item){
+					console.log(initArray)
+					let index = item.color;
+					if(initArray[index]) {
+						initArray[index].push(item)
+					}else {
+						initArray[index] = item;
+					}
+				},{})
 			})
 		}
 	}
@@ -167,7 +180,7 @@
 			padding-left: 5px;
 		}
 	}
-	.table-title, .table-main {
+	.table-main {
 		display: flex;
 		align-items: center;
 		width: 100%;
@@ -176,7 +189,12 @@
 	.table-title {
 		background: #C8E4F7;
 	}
-	.table-title td, .table-main td {
+	.table-title .table-title-td>div{
+		margin-right: 10px;
+		float: left;
+		line-height: 51px;
+	}
+	.table-main td {
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
