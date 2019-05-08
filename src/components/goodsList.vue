@@ -201,20 +201,21 @@
 <script>
   import {saveToLocal, loadFromLocal} from '../common/js/store'
 
-	import cardTitle from "@/components/common/Title.vue"
+  import cardTitle from "@/components/common/Title.vue"
+
   export default {
     name: "goodsList",
     data() {
       return {
-				titlePath: [
-					{
-						menuName: "首页",
-						name: ""
-					},
-					{
-						name: "商品列表"
-					}
-				],
+        titlePath: [
+          {
+            menuName: "首页",
+            name: ""
+          },
+          {
+            name: "商品列表"
+          }
+        ],
         goods: [],
         totalCount: 0,
         loading: true,
@@ -365,11 +366,11 @@
                     attrs: {
                       href: "javascript: void(0)"
                     },
-										on: {
-							click: () => {
-												this.bindShop(this.getData(params.index, 'id'))
-											}
-										},
+                    on: {
+                      click: () => {
+                        this.bindShop(this.getData(params.index, 'id'))
+                      }
+                    },
                     class: ['ivu-icon', 'ivu-icon-md-create']
                   }),
                   h('div', {
@@ -409,13 +410,13 @@
               return h('a', {
                 attrs: {
                   // href: `/#/record?item_id=${this.getData(params.index, 'id')}`
-									href: "javascript: void(0)"
+                  href: "javascript: void(0)"
                 },
-								on: {
-									click: () => {
-										this.lookInfo(params.index)
-									}
-								}
+                on: {
+                  click: () => {
+                    this.lookInfo(params.index)
+                  }
+                }
               }, '查看详细')
             }
           },
@@ -464,6 +465,16 @@
         this.data1 = res.data.arr;
         this.totalCount = res.data.totalPage;
       });
+      this.$http.get('/api/goods', {
+        params: {
+          headers: {
+            'Authorization': 'Bearer access_token'
+          },
+          page: 1
+        }
+      }).then(res => {
+        console.log(res);
+      });
       this.screenAjax(1);
     },
     watch: {
@@ -473,20 +484,20 @@
       }
     },
     methods: {
-			bindShop(id) {
-				this.$router.push({
-					path: "/shopEdit",
-					params: {
-						id
-					}
-				})
-			},
-			lookInfo(index) {
-				console.log(index)
-				this.$router.push({
-					path: '/record'
-				})
-			},
+      bindShop(id) {
+        this.$router.push({
+          path: "/shopEdit",
+          params: {
+            id
+          }
+        })
+      },
+      lookInfo(index) {
+        console.log(index)
+        this.$router.push({
+          path: '/record'
+        })
+      },
       oneSelect(e) {
         this.checkOption = e;
         console.log(this.checkOption)
@@ -674,7 +685,7 @@
       }
     },
     components: {
-			cardTitle
-		}
+      cardTitle
+    }
   }
 </script>
