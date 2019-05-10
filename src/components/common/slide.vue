@@ -24,27 +24,29 @@
 	}
 </style>
 <script>
+	import { mapState } from 'vuex'
 	export default {
 		data() {
 			return {
-				active_name: ""
+				
 			}
 		},
-		methods: {
-			updateMenu() {
-				let path = this.$route.matched[1].path;
-				let parentPath = this.$route.matched[1].parent.name.toLowerCase();
-				if(parentPath != "") {
-					this.active_name = parentPath + "-" + path.substr(1);
-				}
-				this.$nextTick(() => {
-					this.$refs.side_menu.updateOpened();
-					this.$refs.side_menu.updateActiveName();
-				});
+		computed:{
+			active_name() {
+				return this.$store.state.active_name
 			}
 		},
-		mounted() {
-			this.updateMenu();
-		}
+		created() {
+			this.$nextTick(() => {
+				this.$refs.side_menu.updateOpened();
+				this.$refs.side_menu.updateActiveName();
+			});
+		},
+		updated() {
+			this.$nextTick(() => {
+				this.$refs.side_menu.updateOpened();
+				this.$refs.side_menu.updateActiveName();
+			});
+		},
 	}
 </script>

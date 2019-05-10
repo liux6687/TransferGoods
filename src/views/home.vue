@@ -15,6 +15,9 @@
 .home_content {
 	padding: 0 20px;
 }
+.slide_box {
+	min-height: 100%;
+}
 </style>
 <script>
 	import Header from "@/components/common/header";

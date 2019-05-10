@@ -34,11 +34,6 @@ export default new Router({
               path: "/shopEdit",
               name: "ShopEdit",
               component: resolve => require(['@/components/shopEdit'], resolve)
-            },
-            {
-              path: "/shopEdit2",
-              name: "ShopEdit2",
-              component: resolve => require(['@/components/shopEdit2'], resolve)
             }
           ]
         },

@@ -450,6 +450,8 @@
       }
     },
     created() {
+			// this.$store.dispatch("changeSlider", this.$router)
+			// this.$store.dispatch('changeSlider',this.$route);
       if (loadFromLocal('store', 'start', '') !== '') {
         this.count.push(loadFromLocal('store', 'start', ''));
       }
