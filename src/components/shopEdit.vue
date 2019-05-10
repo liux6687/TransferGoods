@@ -9,7 +9,7 @@
 					<div class="sku-num clearfix">
 						<div class="fr">
 							<span class="text">已绑定sku个数</span>
-							<span class="num">{{data.sku_binded_num}}/{{data.sku_num}}</span>
+							<span class="num">{{sku_binded_num}}/{{sku_num}}</span>
 						</div>
 					</div>
 					<div class="color_list" v-for="(item, index) in colorList" :key="index">
@@ -105,6 +105,10 @@
 			return {
 				name: "",
 				colorList: [],
+				sku_num: '',
+				sku_binded_num: '',
+				
+				
 				sku_id_list: [],
 				data: '',
 				listData: [],
@@ -166,13 +170,13 @@
 					arr__.push(arr)
 				})
 				this.$data.colorList = arr__;
-			}).then(() => {
-				console.log(JSON.stringify(this.$data.sku_id_list))
-				this.$http.get("/cr/skus_bind_status").then(res => {
-					console.log(res)
-				}) 
 			})
-
+			this.$http.get("/api/get-bind-num?item_id=8").then(res => {
+				if(res.data.status == 200) {
+					this.$data.sku_binded_num = res.data.data.sku_binded_num;
+					this.$data.sku_num = res.data.data.sku_num;
+				}
+			})
 		}
 	}
 </script>

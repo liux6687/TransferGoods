@@ -4,7 +4,7 @@
 
 const path = require('path')
 const URL_API = "http://192.168.1.22/84store/public/api/";
-const URL_CR = "http://192.168.1.22/84store/public/cr/";
+// const URL_CR = "http://192.168.1.22/84store/public/cr/";
 
 module.exports = {
   dev: {
