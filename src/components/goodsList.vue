@@ -488,8 +488,8 @@
       bindShop(id) {
         this.$router.push({
           path: "/shopEdit",
-          params: {
-            id
+          query: {
+            id: id
           }
         })
       },

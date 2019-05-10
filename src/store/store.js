@@ -21,7 +21,6 @@ export default new Vuex.Store({
 	// 同步
 	mutations:{
 		changeSlider_(state, route) {
-			console.log(route)
 			if(route.path != "/") {
 				if(route.matched.length >= 2) {
 					let path = route.matched[1].path;

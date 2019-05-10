@@ -12,7 +12,8 @@
 							<span class="num">{{sku_binded_num}}/{{sku_num}}</span>
 						</div>
 					</div>
-					<div class="color_list" v-for="(item, index) in colorList" :key="index">
+					<!-- 渲染列表数据 -->
+					<div class="color_list" v-for="(item, index) in list" :key="index">
 						<div class="tables">
 							<table style="width: 100%;">
 								<tr class="table-title" style="width: 100%;">
@@ -24,7 +25,7 @@
 										<div style="width: 330px;">
 											<Col span="5">对应货号:</Col>
 											<Col span="19">
-												<selectBox></selectBox>
+												<!-- <selectBox :du_data="11111" :key="index"></selectBox> -->
 											</Col>
 										</div>
 										<div style="width: 150px;">
@@ -34,21 +35,21 @@
 										</div>
 										<div style="width: 250px;">
 											<span class="fl">出售价格按:</span>
-											<Dropdown class="fl" trigger="click">
+											<Dropdown class="fl" trigger="click" @on-click="sellPriceSelect(index,$event)">
 												 <Button class="select-dropdown" type="info">
-												   百分比
+												   {{sellPriceSelectText}}
 												   <Icon type="ios-arrow-down"></Icon>
 												 </Button>
 												<DropdownMenu slot="list">
-													<DropdownItem>百分比</DropdownItem>
-													<DropdownItem>固定差额</DropdownItem>
+													<DropdownItem name="百分比">百分比</DropdownItem>
+													<DropdownItem name="固定差额">固定差额</DropdownItem>
 												</DropdownMenu>
 											</Dropdown>
 											<Input class="fl" style="width: 80px; line-height: 51px;"></Input>
 										</div>
 										<div class="table-btn-box" style="width: 180px; display: block;">
-											<Button style="width: 80px;" type="success">一键解绑</Button>
-											<Button style="width: 80px;" type="success">批量设置</Button>
+											<Button style="width: 80px;" @click="all_unbundling(index)" type="success">一键解绑</Button>
+											<Button style="width: 80px;" @click="all_setting(index)" type="success">批量设置</Button>
 										</div>
 									</td>
 								</tr>
@@ -66,17 +67,26 @@
 									<td style="width: 40%;">
 										<Col span="4">对应尺码:</Col>
 										<Col span="18">
-											<selectBox></selectBox>
+											<selectBox :du_data="itm.du_data"></selectBox>
 										</Col>
-										<Col span="2"><Button type="info">取消</Button></Col>
+										<Col span="2"><Button @click="item_cancel" type="info">取消</Button></Col>
 									</td>
 									<td class="float-ratio" style="width: 10%;">
-										<Col span="8"><Input></Input></Col>
+										<Col span="8">
+											<Input v-if="itm.du_data" :value="itm.du_data.float_percent?itm.du_data.float_percent:''"></Input>
+											<Input v-else></Input>
+										</Col>
 										<Col span="2">%</Col>
 									</td>
 									<td class="sell-pirce" style="width: 20%;">
-										<Col span="8"><Input></Input></Col>
-										<Col span="4">%</Col>
+										<Col span="8">
+											<Input v-if="sellPriceSelectText == '百分比'" :value="2222"></Input>
+											<Input v-if="sellPriceSelectText == '固定差额'" :value="1111"></Input>
+										</Col>
+										<Col span="4">
+											<span v-if="sellPriceSelectText == '百分比'">%</span>
+											<span v-if="sellPriceSelectText == '固定差额'">元</span>
+										</Col>
 									</td>
 									<td style="width: 5%;">
 										<Button type="info">解绑</Button>
@@ -103,16 +113,17 @@
 	export default {
 		data() {
 			return {
+				item_id:'',
 				name: "",
-				colorList: [],
-				sku_num: '',
-				sku_binded_num: '',
+				taobao_list: [], // 淘宝数据列表
+				du_list:[], //毒的数据列表
+				list: [], // 最终的渲染数据
+				sku_num: '', //绑定总数
+				sku_binded_num: '',// 已绑定数量
+				sku_id_list: [], 
+				sellPriceSelectText: "百分比",
 				
 				
-				sku_id_list: [],
-				data: '',
-				listData: [],
-				color: "",
 				titlePath: [
 					{
 						menuName: "首页",
@@ -125,7 +136,6 @@
 						name: "店铺编辑"
 					}
 				],
-				sellPriceList: ["百分比", "固定差额"],
 				sellPrice: ''
 			}
 		},
@@ -136,48 +146,163 @@
 		methods:{
 			isReturn() {
 				this.$router.go(-1);
+			},
+			sellPriceSelect(index, name) {
+				console.log(index, name)
+				console.log()
+				$($(".select-dropdown")[index]).find("span").text(name)
+				// this.$data.sellPriceSelectText = name;
+			},
+			all_unbundling(index) {
+				console.log(index,"一键解绑")
+			},
+			all_setting() {
+				console.log("批量设置")
+			},
+			item_cancel() {
+				console.log("当前项取消")
+			},
+			item_unbundling() {
+				console.log("当前项解绑")
+			},
+			is_submit() {
+				console.log("批量绑定")
 			}
 		},
 		created() {
-			this.$http.get("/api/goods-binding-edit/" + 4).then((res)=> {
+			console.log(this.$route)
+			this.$data.item_id = this.$route.query.id;
+			// 获取淘宝数据
+			this.$http.get("/api/goods-binding-edit/" + this.$route.query.id).then(res => {
 				this.$data.name = res.data.data.data.name;
+				this.$data.taobao_list = res.data.data.data.skus;
 				let skus = res.data.data.data.skus;
-				let arr = []
-				let arr_ = []
-				let arr__ = []
-				let sku_id_list = []
+				let sku_id_arr = [];
 				skus.forEach((item, index) => {
-					arr.push(item.color)
-					sku_id_list.push(item.id)
+					// 将所有的淘宝skuid组成数组
+					sku_id_arr.push(item.id)
 				})
-				this.$data.sku_id_list = sku_id_list;
-				arr.forEach((item, index) => {
-					if(arr_.indexOf(item) == -1) {
-						arr_.push(item)
-					}else {
-						arr_[item] = item
+				this.$data.sku_id_list = sku_id_arr;
+			}).then(() => {
+				// 请求绑定数量
+				// this.$http.get("/api/skus-bind-status", {
+				// 					params: {
+				// 						"sku_ids": this.$data.sku_id_list
+				// 					}
+				// 				}).then(res => {
+				// 					console.log(res)
+				// 				})
+				// 请求毒的数据列表
+				this.$http.get("/api/skus-bind-status", {
+					params: {
+						"sku_ids": this.$data.sku_id_list
 					}
-				})
-				arr_.forEach((item, index) => {
-					item = item.replace(/\s*/g,"");
-					let arr = [];
-					skus.forEach((itm, idx) => {
-						let color = itm.color.replace(/\s*/g,"");
-						if(item == color) {
-							arr.push(itm)
+				}).then(res => {
+					if(res.data.status == 200) {
+						this.$data.du_list = res.data.data;
+					}
+				}).then(() => {
+					let color_arr = [];
+					let new_color_arr = [];
+					let list = [];
+					let taobao_list_ = this.$data.taobao_list; //备份淘宝数据
+					taobao_list_.forEach((tb_item, tb_index) => {
+						// 将淘宝数据的颜色属性组成数组
+						color_arr.push(tb_item.color)
+						tb_item["sell_status"] = ["百分比", "固定差额"]
+						// 将毒数据中与淘宝数据中鞋码相同的放到一起
+						this.$data.du_list.forEach((du_item, du_index) => {
+							let num = du_item.name.lastIndexOf(" ");
+							let du_size = du_item.name.substring(num);
+							if(Number(tb_item.size)==Number(du_size)) {
+								if(tb_item.id == du_item.taobao_sku_id) {
+									tb_item["du_data"] = du_item
+								}else {
+									tb_item["du_data"] = {}
+								}
+							}
+						})
+					})
+					this.$data.taobao_list = taobao_list_ //更新淘宝数据
+					// 颜色数组去重
+					color_arr.forEach((item, index) => {
+						if(new_color_arr.indexOf(item) == -1) {
+							new_color_arr.push(item)
+						}else {
+							new_color_arr[item] = item
 						}
 					})
-					arr__.push(arr)
+					//淘宝数据根据颜色不同  分组
+					new_color_arr.forEach((item, index) => {
+						item = item.replace(/\s*/g,"");
+						let arr = [];
+						this.$data.taobao_list.forEach((itm, idx) => {
+							let color = itm.color.replace(/\s*/g,"");
+							if(item == color) {
+								arr.push(itm)
+							}
+						})
+						list.push(arr)
+					})
+					this.$data.list = list;
+					console.log(this.$data.list)
 				})
-				this.$data.colorList = arr__;
 			})
-			this.$http.get("/api/get-bind-num?item_id=8").then(res => {
-				if(res.data.status == 200) {
-					this.$data.sku_binded_num = res.data.data.sku_binded_num;
-					this.$data.sku_num = res.data.data.sku_num;
-				}
-			})
-		}
+		},
+// 		created() {
+// 			this.$http.get("/api/goods-binding-edit/" + 4).then((res)=> {
+// 				this.$data.name = res.data.data.data.name;
+// 				let skus = res.data.data.data.skus;
+// 				let arr = []
+// 				let arr_ = []
+// 				let arr__ = []
+// 				let sku_id_arr = [];
+// 				skus.forEach((item, index) => {
+// 					// 将所有的淘宝skuid组成数组
+// 					sku_id_arr.push(item.id)
+// 					// 将淘宝数据的颜色属性组成数组
+// 					arr.push(item.color)
+// 				})
+// 				this.$data.sku_id_list = sku_id_arr;
+// 				// 颜色数组去重
+// 				arr.forEach((item, index) => {
+// 					if(arr_.indexOf(item) == -1) {
+// 						arr_.push(item)
+// 					}else {
+// 						arr_[item] = item
+// 					}
+// 				})
+// 				// 淘宝数据根据颜色不同  分组
+// 				arr_.forEach((item, index) => {
+// 					item = item.replace(/\s*/g,"");
+// 					let arr = [];
+// 					skus.forEach((itm, idx) => {
+// 						let color = itm.color.replace(/\s*/g,"");
+// 						if(item == color) {
+// 							arr.push(itm)
+// 						}
+// 					})
+// 					arr__.push(arr)
+// 				})
+// 				this.$data.colorList = arr__;
+// 			})
+// 			.then(res => {
+// 				this.$http.get("/api/skus-bind-status", {
+// 					params: {
+// 						"sku_ids": this.$data.sku_id_list
+// 					}
+// 				}).then(res => {
+// 					console.log(res)
+// 				})
+// 			})
+// 			this.$http.get("/api/get-bind-num?item_id=8").then(res => {
+// 				if(res.data.status == 200) {
+// 					this.$data.sku_binded_num = res.data.data.sku_binded_num;
+// 					this.$data.sku_num = res.data.data.sku_num;
+// 				}
+// 			})
+// 			// 请求sku绑定的关系
+// 		}
 	}
 </script>
 

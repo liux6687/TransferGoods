@@ -18,6 +18,7 @@ Vue.prototype.jQuery = $;
 Vue.config.productionTip = false;
 axios.interceptors.request.use(
     config => {
+		console.log(1111)
         if (sessionStorage.getItem("tokenInfo")) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
 			config.headers.Authorization = `Bearer ${JSON.parse(sessionStorage.getItem("tokenInfo")).access_token}`;
         }
@@ -27,6 +28,7 @@ axios.interceptors.request.use(
         return Promise.reject(err);
     });
 axios.interceptors.response.use(function(response) {
+	console.log(2222)
 	if(response.status == "401") {
 		// token 过期了 跳转登录页
 		router.push('/goodsList');

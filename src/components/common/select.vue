@@ -30,7 +30,13 @@
 				data: []
 			}
 		},
-		props:["text"],
+		props:["du_data"],
+		created() {
+			console.log(this.du_data)
+			if(this.du_data) {
+				this.$data.text_ = this.du_data.name
+			}
+		},
 		methods: {
 			isShow(e) {
 				let dom = e.target;
