@@ -56,11 +56,15 @@
           <Icon type="ios-arrow-down"></Icon>
         </Button>
         <DropdownMenu slot="list">
-          <DropdownItem name="check">一键改价</DropdownItem>
-          <DropdownItem name="all">一键全部改价</DropdownItem>
+          <DropdownItem name="1" title="注：选中的商品，绑定了的sku才会被改价">一键改价</DropdownItem>
+          <DropdownItem name="2" title="注：无视选中，全店绑定过的sku都会被改价">一键全部改价</DropdownItem>
+          <DropdownItem name="3" title="注：选中的商品，将启动监听改价（绑定了的sku才会被改价）">启动改价</DropdownItem>
+          <DropdownItem name="4" title="注：选中的商品，将停止监听改价">停止改价</DropdownItem>
+          <DropdownItem name="5" title="一键启动所有已绑商品的价格监控">一键启动所有已绑商品的价格监控</DropdownItem>
+          <DropdownItem name="6" title="一键停止所有已绑商品的价格监控">一键停止所有已绑商品的价格监控</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px">
+      <Dropdown trigger="click" style="margin-left: 20px;display: none;">
         <Button href="javascript:void(0)">
           启动改价
           <Icon type="ios-arrow-down"></Icon>
@@ -71,13 +75,14 @@
           <DropdownItem>一键停止所有已绑商品的价格监控</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px">
+      <Dropdown trigger="click" style="margin-left: 20px" @on-click="changeUp">
         <Button href="javascript:void(0)">
-          只改涨不改跌
+          改涨改跌
           <Icon type="ios-arrow-down"></Icon>
         </Button>
         <DropdownMenu slot="list">
-          <DropdownItem>既该涨又改跌</DropdownItem>
+          <DropdownItem name="1">只改涨不改跌</DropdownItem>
+          <DropdownItem name="2">既改涨又改跌</DropdownItem>
         </DropdownMenu>
       </Dropdown>
       <Dropdown trigger="click" style="margin-left: 20px" @on-click="changeNine">
@@ -86,20 +91,16 @@
           <Icon type="ios-arrow-down"></Icon>
         </Button>
         <DropdownMenu slot="list">
-          <DropdownItem name="0">价尾取消改9</DropdownItem>
-          <DropdownItem name="1">价尾自动改9</DropdownItem>
+          <DropdownItem name="1">价尾取消改9</DropdownItem>
+          <DropdownItem name="2">价尾自动改9</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px" @on-click="syncShop">
-        <Button href="javascript:void(0)">
-          同步淘宝店商品
-        </Button>
-      </Dropdown>
-      <Dropdown trigger="click" style="margin-left: 20px" @on-click="addNew">
-        <Button href="javascript:void(0)">
-          手动上新
-        </Button>
-      </Dropdown>
+      <Button href="javascript:void(0)" style="margin-left: 20px" @click="syncShop">
+        同步淘宝店商品
+      </Button>
+      <Button href="javascript:void(0)" style="margin-left: 20px" @click="addNew">
+        手动上新
+      </Button>
     </div>
     <Table :loading="loading"
            no-data-text="暂无数据"
@@ -116,7 +117,7 @@
     <div class="page">
       <Page id="page" :current.sync="current"
             :show-total="true"
-            :page-size="5"
+            :page-size="10"
             :show-sizer="true"
             :page-size-opts="[10, 20, 30, 40]"
             placement="bottom"
@@ -201,20 +202,21 @@
 <script>
   import {saveToLocal, loadFromLocal} from '../common/js/store'
 
-	import cardTitle from "@/components/common/Title.vue"
+  import cardTitle from "@/components/common/Title.vue"
+
   export default {
     name: "goodsList",
     data() {
       return {
-				titlePath: [
-					{
-						menuName: "首页",
-						name: ""
-					},
-					{
-						name: "商品列表"
-					}
-				],
+        titlePath: [
+          {
+            menuName: "首页",
+            name: ""
+          },
+          {
+            name: "商品列表"
+          }
+        ],
         goods: [],
         totalCount: 0,
         loading: true,
@@ -340,7 +342,7 @@
                     textAlign: 'center',
                     marginTop: '5px'
                   }
-                }, '624041-303#南海岸泡'),
+                }, this.getData(params.index, 'name')),
               ])
             }
           },
@@ -365,11 +367,11 @@
                     attrs: {
                       href: "javascript: void(0)"
                     },
-										on: {
-							click: () => {
-												this.bindShop(this.getData(params.index, 'id'))
-											}
-										},
+                    on: {
+                      click: () => {
+                        this.bindShop(this.getData(params.index, 'id'))
+                      }
+                    },
                     class: ['ivu-icon', 'ivu-icon-md-create']
                   }),
                   h('div', {
@@ -409,13 +411,13 @@
               return h('a', {
                 attrs: {
                   // href: `/#/record?item_id=${this.getData(params.index, 'id')}`
-									href: "javascript: void(0)"
+                  href: "javascript: void(0)"
                 },
-								on: {
-									click: () => {
-										this.lookInfo(params.index)
-									}
-								}
+                on: {
+                  click: () => {
+                    this.lookInfo(params.index)
+                  }
+                }
               }, '查看详细')
             }
           },
@@ -461,11 +463,6 @@
       if (loadFromLocal('store', 'search', '') !== '') {
         this.count.push(loadFromLocal('store', 'search', ''));
       }
-      this.$http.get('/api/shop/1').then(res => {
-        this.loading = false;
-        this.data1 = res.data.arr;
-        this.totalCount = res.data.totalPage;
-      });
       this.screenAjax(1);
     },
     watch: {
@@ -475,30 +472,55 @@
       }
     },
     methods: {
-			bindShop(id) {
-				this.$router.push({
-					path: "/shopEdit",
-					params: {
-						id
-					}
-				})
-			},
-			lookInfo(index) {
-				console.log(index)
-				this.$router.push({
-					path: '/record'
-				})
-			},
+      success(str) {
+        this.$Message.success(str);
+      },
+      error(str) {
+        this.$Message.error(str);
+      },
+      checkLength() {
+        if (this.checkOption.length <= 0) {
+          this.error('您没有选择商品！');
+          return false;
+        }
+        return true;
+      },
+      bindShop(id) {
+        this.$router.push({
+          path: "/shopEdit",
+          params: {
+            id
+          }
+        })
+      },
+      lookInfo(index) {
+        console.log(index)
+        this.$router.push({
+          path: '/record'
+        })
+      },
       oneSelect(e) {
-        this.checkOption = e;
+        const arr = [];
+        e.forEach(item => {
+          arr.push(item.id);
+        });
+        this.checkOption = arr;
         console.log(this.checkOption)
       },
       selectALL(e) {
-        this.checkOption = e;
+        const arr = [];
+        e.forEach(item => {
+          arr.push(item.id);
+        });
+        this.checkOption = arr;
         console.log(this.checkOption)
       },
       changeSelect(e) {
-        this.checkOption = e;
+        const arr = [];
+        e.forEach(item => {
+          arr.push(item.id);
+        });
+        this.checkOption = arr;
         console.log(this.checkOption)
       },
       rowClassName(row, index) {
@@ -509,15 +531,14 @@
       },
       pageChange(e) {
         this.current = e;
-        this.$http.get(`/api/shop/${e}`).then(res => {
-          this.loading = false;
-          document.body.scrollTop = document.documentElement.scrollTop = 0;
-          this.data1 = res.data.arr;
-          this.totalCount = res.data.totalPage;
-        });
+        this.goTop();
         this.screenAjax(e);
       },
+      goTop() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+      },
       goElevatorPage() {
+        this.goTop();
         let evtObj;
         let thisPage = document.getElementById('page');
         let elevatorDiv = thisPage.getElementsByClassName("ivu-page-options-elevator");
@@ -540,49 +561,28 @@
         }
       },
       screenAjax(e) {
+        this.loading = true;
         const bind = loadFromLocal('store', 'bind', '');
         const start = loadFromLocal('store', 'start', '');
         const search = loadFromLocal('store', 'search', '');
         console.log(bind, start);
+        if (loadFromLocal('store', 'bind', '') === '' && loadFromLocal('store', 'start', '') === '' && loadFromLocal('store', 'search', '') === '') {
+          this.getGoods(e, '', '', null);
+        }
         if (bind === '已绑定') {
-          this.$http.get(`/api/bind/1/${e}`).then(res => {
-            this.loading = false;
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
-            this.data1 = res.data.arr;
-            this.totalCount = res.data.totalPage;
-          });
+          this.getGoods(e, 1, '', null);
         }
         if (bind === '未绑定') {
-          this.$http.get(`/api/bind/0/${e}`).then(res => {
-            this.loading = false;
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
-            this.data1 = res.data.arr;
-            this.totalCount = res.data.totalPage;
-          });
+          this.getGoods(e, 0, '', null);
         }
         if (start === '已启动') {
-          this.$http.get(`/api/start/1/${e}`).then(res => {
-            this.loading = false;
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
-            this.data1 = res.data.arr;
-            this.totalCount = res.data.totalPage;
-          });
+          this.getGoods(e, '', 1, null);
         }
         if (start === '未启动') {
-          this.$http.get(`/api/start/0/${e}`).then(res => {
-            this.loading = false;
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
-            this.data1 = res.data.arr;
-            this.totalCount = res.data.totalPage;
-          });
+          this.getGoods(e, '', 0, null);
         }
         if (search !== '') {
-          this.$http.get(`/api/search/${search}/${e}`).then(res => {
-            this.loading = false;
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
-            this.data1 = res.data.arr;
-            this.totalCount = res.data.totalPage;
-          });
+          this.getGoods(e, '', '', search);
         }
       },
       sizeChange(e) {
@@ -595,6 +595,7 @@
         console.log(data);
       },
       getBindData(name) {
+        console.log(name);
         this.current = 1;
         const status = ['未绑定', '已绑定'];
         const str = status[name];
@@ -603,12 +604,7 @@
         const bind = loadFromLocal('store', 'bind', '');
         this.store = [];
         this.store.push(bind);
-        this.$http.get(`/api/bind/${name}/1`).then(res => {
-          this.loading = false;
-          this.data1 = res.data.arr;
-          console.log(this.data1);
-          this.totalCount = res.data.totalPage
-        });
+        this.screenAjax(1);
       },
       getStart(name) {
         this.current = 1;
@@ -619,22 +615,32 @@
         const start = loadFromLocal('store', 'start', '');
         this.store = [];
         this.store.push(start);
-        this.$http.get(`/api/start/${name}/1`).then(res => {
+        this.screenAjax(1);
+      },
+      getGoods(page = 1, is_bind = '', is_start = '', wd = null) {
+        this.$http.get('/api/goods', {
+          params: {
+            headers: {
+              'Authorization': 'Bearer access_token'
+            },
+            page,
+            is_bind,
+            is_start,
+            wd
+          }
+        }).then(res => {
           this.loading = false;
-          this.data1 = res.data.arr;
-          console.log(this.data1);
-          this.totalCount = res.data.totalPage
+          this.data1 = res.data.data.data;
+          this.totalCount = res.data.data.total;
+          console.log(res.data.data.data, res.data.data.total);
         });
       },
       handleClose2(event, name) {
         const index = this.count.indexOf(name);
         this.count.splice(index, 1);
         window.localStorage.clear();
-        this.$http.get('/api/shop/1').then(res => {
-          this.loading = false;
-          this.data1 = res.data.arr;
-          this.totalCount = res.data.totalPage;
-        });
+        this.screenAjax(1);
+        // this.getGoods(1);
       },
       handleSubmit() {
         const search = this.$refs.searchInput.value;
@@ -644,39 +650,146 @@
         const search_str = loadFromLocal('store', 'search', '');
         this.store = [];
         this.store.push(search_str);
-        this.$http.get(`/api/search/${search}/1`).then((res) => {
-          this.loading = false;
-          this.data1 = res.data.arr;
-          this.totalCount = res.data.totalPage;
-          console.log(this.data1);
-        });
+        this.screenAjax(1);
         console.log(search);
       },
       clearStore() {
         window.localStorage.clear();
         this.current = 1;
         this.store = [];
-        this.$http.get('/api/shop/1').then(res => {
-          this.loading = false;
-          this.data1 = res.data.arr;
-          this.totalCount = res.data.totalPage;
-        });
+        this.screenAjax(1);
       },
       changePrice(name) {
-        if (name === 'check') {
+        if (name === '1') {
+          if (!this.checkLength()) {
+            return;
+            ;
+          }
+          this.$http({
+            method: 'post',
+            url: '/apis/goods/sync-price',
+            data: {
+              '_method': 'POST',
+              '_token': "{{csrf_token()}}",
+              item_id: this.checkOption
+            }
+          }).then(res => {
+            console.log(res);
+          });
+          // this.$http.post('/apis/goods/sync-price', {
+          //   '_method': 'POST',
+          //   '_token': "{{csrf_token()}}",
+          //   item_id: this.checkOption
+          // }).then(res => {
+          //   console.log(res);
+          // })
         }
-        if (name === 'all') {
+        if (name === '2') {
+          this.$http.post('/apis/goods/sync-all-price', {
+            '_token': "{{csrf_token()}}"
+          }).then(res => {
+            console.log(res);
+          })
+        }
+        if (name === '3') {
+          if (!this.checkLength()) {
+            return;
+            ;
+          }
+          this.$http.post('/apis/goods/start-change-price', {
+            '_token': "{{csrf_token()}}",
+            item_id: this.checkOption
+          }).then(res => {
+            console.log(res);
+          })
+        }
+        if (name === '4') {
+          if (!this.checkLength()) {
+            return;
+            ;
+          }
+          this.$http.post('/apis/goods/stop-change-price', {
+            '_token': "{{csrf_token()}}",
+            item_id: this.checkOption
+          }).then(res => {
+            console.log(res);
+          })
+        }
+        if (name === '5') {
+          this.$http.post('/apis/goods/start-all-change-price', {
+            '_token': "{{csrf_token()}}"
+          }).then(res => {
+            console.log(res);
+          })
+        }
+        if (name === '6') {
+          this.$http.post('/apis/stop-all-change-price', {
+            '_token': "{{csrf_token()}}"
+          }).then(res => {
+            console.log(res);
+          })
+        }
+      },
+      changeUp(name) {
+        console.log(name);
+        if (!this.checkLength()) {
+          return;
+        }
+        if (name === '1') {
+          this.$http.post('/apis/goods/onlyup-change-price', {
+            '_token': "{{csrf_token()}}",
+            is_only_up: 1,
+            item_id: this.checkOption
+          }).then(res => {
+            console.log(res);
+          })
+        }
+        if (name === '2') {
+          this.$http.post('/apis/goods/onlyup-change-price', {
+            '_token': "{{csrf_token()}}",
+            is_only_up: 0,
+            item_id: this.checkOption
+          }).then(res => {
+            console.log(res);
+          })
         }
       },
       changeNine(name) {
+        if (!this.checkLength()) {
+          return;
+        }
+        if (name === '1') {
+          this.$http.post('/apis/goods/cancle-mod-nine', {
+            '_token': "{{csrf_token()}}",
+            is_mod_nine: 1,
+            item_id: this.checkOption
+          }).then(res => {
+            console.log(res);
+          })
+        }
+        if (name === '2') {
+          this.$http.post('/apis/goods/cancle-mod-nine', {
+            '_token': "{{csrf_token()}}",
+            is_mod_nine: 0,
+            item_id: this.checkOption
+          }).then(res => {
+            console.log(res);
+          })
+        }
       },
-      syncShop(name) {
+      syncShop() {
+        this.$http.post('/apis/goods/sync', {
+          '_token': "{{csrf_token()}}"
+        }).then(res => {
+          console.log(res);
+        })
       },
-      addNew(name) {
+      addNew() {
+        window.location.href = 'https://cwa.tosneaker.com/store/goods/create'
       }
     },
     components: {
-			cardTitle
-		}
+      cardTitle
+    }
   }
 </script>
