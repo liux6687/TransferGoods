@@ -3,9 +3,26 @@
 		<cardTitle :titlePath="titlePath"></cardTitle>
 		<Row class="filter">
 			<Col class="select" span="2">
-				<Select v-model="filter" style="width:100%">
-						<Option v-for="(item, index) in filterArr" :value="item" :key="index">{{item}}</Option>
-				</Select>
+				<Dropdown trigger="click" @on-click="filter1">
+					<Button style="width:120px">
+						{{filter1text}}
+						<Icon type="ios-arrow-down"></Icon>
+					</Button>
+					<DropdownMenu slot="list">
+						<DropdownItem :name="item" v-for="(item, index) in filterArr1" :value="item" :key="index">{{item}}</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+			</Col>
+			<Col class="select" span="2">
+				<Dropdown trigger="click" @on-click="filter2">
+					<Button style="width:120px">
+						{{filter2text}}
+						<Icon type="ios-arrow-down"></Icon>
+					</Button>
+					<DropdownMenu slot="list">
+						<DropdownItem :name="item" v-for="(item, index) in filterArr2" :value="item" :key="index">{{item}}</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
 			</Col>
 			<Col class="price_interval" span="6">
 				<Form inline>
@@ -28,6 +45,7 @@
 								<Button type="primary" @click="submit">搜索</Button>
 							</FormItem >
 						</Col>
+						
 					</Row>
 				</Form>
 			</Col>
@@ -73,8 +91,10 @@
 	export default {
 		data() {
 			return {
-				filter: "",
-				filterArr: ["选择日志状态", "失败", "成功", "等待", "无需改价"],
+				filter1text: "选择日志状态",
+				filter2text: "选择涨跌状态",
+				filterArr1: ["失败", "成功", "等待", "无需改价","无"],
+				filterArr2: ["涨跌全有", "价格上涨", "价格下跌", "无"],
 				old_price: "",
 				new_price: "",
 				columns:[
@@ -150,6 +170,21 @@
 			submit() {
 				console.log(1111)
 			},
+			filter1(name) {
+				console.log(name)
+				if(name == "无"){
+					this.$data.filter1text = "选择日志状态";
+				}else{
+					this.$data.filter1text = name;
+				}
+			},
+			filter2(name) {
+				if(name == "无"){
+					this.$data.filter1text = "选择涨跌状态";
+				}else {
+					this.$data.filter2text = name;
+				}
+			},
 			// 表格渲染函数
 			setName(index) {
 				return this.$data.data[index].sku_name
@@ -175,13 +210,16 @@
 			// 分页
 			page_change(e) {
 				console.log(e)
+			},
+			getData(item_id, is_status, is_status_price, price_min, price_max, order_by, order_sort) {
+				
 			}
 		},
 		created() {
-			this.$http.get("static/record.json").then((res) => {
+			this.$http.get("/api/change-price-log").then((res) => {
 				console.log(res)
 				if(res.status == 200) {
-					this.$data.data = res.data.data;
+					this.$data.data = res.data.data.data;
 				}
 			})
 		}
