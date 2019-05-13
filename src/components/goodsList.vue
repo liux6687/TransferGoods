@@ -303,7 +303,7 @@
                       },
                       on: {
                         click: function (e) {
-                          console.log(e);
+                          // console.log(e);
                         }
                       }
                     }, '同步单个商品')
@@ -452,8 +452,8 @@
       }
     },
     created() {
-			// this.$store.dispatch("changeSlider", this.$router)
-			// this.$store.dispatch('changeSlider',this.$route);
+      // this.$store.dispatch("changeSlider", this.$router)
+      // this.$store.dispatch('changeSlider',this.$route);
       if (loadFromLocal('store', 'start', '') !== '') {
         this.count.push(loadFromLocal('store', 'start', ''));
       }
@@ -467,7 +467,7 @@
     },
     watch: {
       store(val) {
-        console.log(val);
+        // console.log(val);
         this.count = val;
       }
     },
@@ -494,7 +494,7 @@
         })
       },
       lookInfo(index) {
-        console.log(index)
+        // console.log(index)
         this.$router.push({
           path: '/record'
         })
@@ -505,7 +505,7 @@
           arr.push(item.id);
         });
         this.checkOption = arr;
-        console.log(this.checkOption)
+        // console.log(this.checkOption)
       },
       selectALL(e) {
         const arr = [];
@@ -513,7 +513,7 @@
           arr.push(item.id);
         });
         this.checkOption = arr;
-        console.log(this.checkOption)
+        // console.log(this.checkOption)
       },
       changeSelect(e) {
         const arr = [];
@@ -521,7 +521,7 @@
           arr.push(item.id);
         });
         this.checkOption = arr;
-        console.log(this.checkOption)
+        // console.log(this.checkOption)
       },
       rowClassName(row, index) {
         if (index === 0) {
@@ -565,7 +565,7 @@
         const bind = loadFromLocal('store', 'bind', '');
         const start = loadFromLocal('store', 'start', '');
         const search = loadFromLocal('store', 'search', '');
-        console.log(bind, start);
+        // console.log(bind, start);
         if (loadFromLocal('store', 'bind', '') === '' && loadFromLocal('store', 'start', '') === '' && loadFromLocal('store', 'search', '') === '') {
           this.getGoods(e, '', '', null);
         }
@@ -586,16 +586,16 @@
         }
       },
       sizeChange(e) {
-        console.log(e)
+        // console.log(e)
       },
       getData(index, attr) {
         return this.data1[index][attr];
       },
       filterChange(data) {
-        console.log(data);
+        // console.log(data);
       },
       getBindData(name) {
-        console.log(name);
+        // console.log(name);
         this.current = 1;
         const status = ['未绑定', '已绑定'];
         const str = status[name];
@@ -632,7 +632,12 @@
           this.loading = false;
           this.data1 = res.data.data.data;
           this.totalCount = res.data.data.total;
-          console.log(res.data.data.data, res.data.data.total);
+          if (res.data.status === 200) {
+            this.success(res.data.message);
+          } else {
+            this.error(res.data.message);
+          }
+          // console.log(res.data.data.data, res.data.data.total);
         });
       },
       handleClose2(event, name) {
@@ -651,7 +656,7 @@
         this.store = [];
         this.store.push(search_str);
         this.screenAjax(1);
-        console.log(search);
+        // console.log(search);
       },
       clearStore() {
         window.localStorage.clear();
@@ -663,94 +668,132 @@
         if (name === '1') {
           if (!this.checkLength()) {
             return;
-            ;
           }
           this.$http({
             method: 'post',
-            url: '/apis/goods/sync-price',
+            url: '/api/sync-price',
             data: {
               '_method': 'POST',
               '_token': "{{csrf_token()}}",
               item_id: this.checkOption
             }
           }).then(res => {
-            console.log(res);
+            // console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
           });
-          // this.$http.post('/apis/goods/sync-price', {
-          //   '_method': 'POST',
-          //   '_token': "{{csrf_token()}}",
-          //   item_id: this.checkOption
-          // }).then(res => {
-          //   console.log(res);
-          // })
         }
         if (name === '2') {
-          this.$http.post('/apis/goods/sync-all-price', {
+          this.$http.post('/api/sync-all-price', {
             '_token': "{{csrf_token()}}"
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
         if (name === '3') {
           if (!this.checkLength()) {
             return;
-            ;
           }
-          this.$http.post('/apis/goods/start-change-price', {
+          this.$http.post('/api/start-change-price', {
             '_token': "{{csrf_token()}}",
             item_id: this.checkOption
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
         if (name === '4') {
           if (!this.checkLength()) {
             return;
-            ;
           }
-          this.$http.post('/apis/goods/stop-change-price', {
+          this.$http.post('/api/stop-change-price', {
             '_token': "{{csrf_token()}}",
             item_id: this.checkOption
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
         if (name === '5') {
-          this.$http.post('/apis/goods/start-all-change-price', {
+          this.$http.post('/api/start-all-change-price', {
             '_token': "{{csrf_token()}}"
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
         if (name === '6') {
-          this.$http.post('/apis/stop-all-change-price', {
+          this.$http.post('/api/stop-all-change-price', {
             '_token': "{{csrf_token()}}"
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
       },
       changeUp(name) {
-        console.log(name);
+        // console.log(name);
         if (!this.checkLength()) {
           return;
         }
         if (name === '1') {
-          this.$http.post('/apis/goods/onlyup-change-price', {
+          this.$http.post('/api/onlyup-change-price', {
             '_token': "{{csrf_token()}}",
             is_only_up: 1,
             item_id: this.checkOption
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
         if (name === '2') {
-          this.$http.post('/apis/goods/onlyup-change-price', {
+          this.$http.post('/api/onlyup-change-price', {
             '_token': "{{csrf_token()}}",
             is_only_up: 0,
             item_id: this.checkOption
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
       },
@@ -759,29 +802,47 @@
           return;
         }
         if (name === '1') {
-          this.$http.post('/apis/goods/cancle-mod-nine', {
+          this.$http.post('/api/cancle-mod-nine', {
             '_token': "{{csrf_token()}}",
             is_mod_nine: 1,
             item_id: this.checkOption
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
         if (name === '2') {
-          this.$http.post('/apis/goods/cancle-mod-nine', {
+          this.$http.post('/api/cancle-mod-nine', {
             '_token': "{{csrf_token()}}",
             is_mod_nine: 0,
             item_id: this.checkOption
           }).then(res => {
-            console.log(res);
+            if (res.data.status === 200) {
+              this.success(res.data.message);
+            } else {
+              this.error(res.data.message);
+            }
+            this.screenAjax(this.current);
+            // console.log(res);
           })
         }
       },
       syncShop() {
-        this.$http.post('/apis/goods/sync', {
+        this.$http.post('/api/sync', {
           '_token': "{{csrf_token()}}"
         }).then(res => {
-          console.log(res);
+          if (res.data.status === 200) {
+            this.success(res.data.message);
+          } else {
+            this.error(res.data.message);
+          }
+          this.screenAjax(this.current);
+          // console.log(res);
         })
       },
       addNew() {
