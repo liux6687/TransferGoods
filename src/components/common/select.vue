@@ -9,7 +9,8 @@
 			</div>
 			<div class="showBox">
 				<div class="search-input-box">
-					<input class="search-input" type="text" @input="isSearch" v-model="isSearchData">
+					<!-- <input class="search-input" type="text" @input="isSearch" v-model="isSearchData"> -->
+					<Input class="search-input" v-model="isSearchData" icon="ios-clock-outline" @on-change="isSearch"/>
 				</div>
 				<p class="prompt" v-if="data.length <= 0">{{isSearchData != ''? "暂无数据":"请输入搜索关键字"}}</p>
 				<ul v-else class="goodsList">
@@ -30,11 +31,13 @@
 				data: []
 			}
 		},
-		props:["du_data"],
+		props:["du_data", "top", "top-index"],
 		created() {
-			console.log(this.du_data)
-			if(this.du_data) {
-				this.$data.text_ = this.du_data.name
+			// console.log(this.du_data)
+			if(this.top == 0) {
+				if(this.du_data) {
+					this.$data.text_ = this.du_data.name
+				}
 			}
 		},
 		methods: {
@@ -57,10 +60,19 @@
 			},
 			isSearch() {
 				if(this.$data.isSearchData != "") {
-					this.$http.get("static/data1.json").then((res) => {
-						console.log(res)
-						this.$data.data = res.data.data;
-					})
+					if(this.top == 1) {
+						this.$http.get("/api/item/select2",{
+							params: {
+								wd: this.$data.isSearchData
+							}
+						}).then((res) => {
+							console.log(res)
+							// this.$data.data = res.data.data;
+						})
+					}else if(this.top == 0) {
+						
+					}
+					
 				}else {
 					this.$data.data = []
 				}
@@ -70,6 +82,15 @@
 				let dom = e.target;
 				$(dom).parents(".select").find(".showBox").removeClass("active")
 				this.$data.text_ = this.$data.data[index].name;
+				let item_id = this.$data.data[index].id;
+				this.$http.get("/api/get-sku-by-item-id", {
+					params: {
+						item_id
+					}
+				}).then(res => {
+					console.log(res)
+				})
+				
 			}
 		},
 		mounted() {

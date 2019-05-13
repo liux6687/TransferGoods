@@ -3,7 +3,7 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path')
-const URL_API = "http://192.168.1.22/84store/public/api/";
+const URL_API = "http://192.168.1.42/84store/public/api/";
 // const URL_CR = "http://192.168.1.22/84store/public/cr/";
 
 module.exports = {

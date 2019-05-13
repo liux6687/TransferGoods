@@ -20,24 +20,28 @@
 									<td class="table-title-td" style="width: 100%;">
 										<div style="width: 250px;">
 											<span>颜色:</span>
-											<span>{{item[0].color}}</span>
+											<span>{{item.list[0].color}}</span>
 										</div>
 										<div style="width: 330px;">
 											<Col span="5">对应货号:</Col>
 											<Col span="19">
-												<!-- <selectBox :du_data="11111" :key="index"></selectBox> -->
+												<selectBox :top="1" :top-index="index" :key="index"></selectBox>
 											</Col>
 										</div>
 										<div style="width: 150px;">
 											<Col span="12">浮动比例:</Col>
-											<Col span="8"><Input></Input></Col>
+											<Col span="8"><Input v-model="item.top_float_percent"></Input></Col>
 											<Col span="2">%</Col>
 										</div>
 										<div style="width: 250px;">
 											<span class="fl">出售价格按:</span>
 											<Dropdown class="fl" trigger="click" @on-click="sellPriceSelect(index,$event)">
-												 <Button class="select-dropdown" type="info">
-												   {{sellPriceSelectText}}
+												 <Button v-if="item.top_select == 1" class="select-dropdown" type="info">
+												   百分比
+												   <Icon type="ios-arrow-down"></Icon>
+												 </Button>
+												 <Button v-if="item.top_select == 2" class="select-dropdown" type="info">
+												   固定差额
 												   <Icon type="ios-arrow-down"></Icon>
 												 </Button>
 												<DropdownMenu slot="list">
@@ -45,7 +49,8 @@
 													<DropdownItem name="固定差额">固定差额</DropdownItem>
 												</DropdownMenu>
 											</Dropdown>
-											<Input class="fl" style="width: 80px; line-height: 51px;"></Input>
+											<Input class="fl" v-if="item.top_select == 1" v-model="item.top_price_percent" style="width: 80px; line-height: 51px;"></Input>
+											<Input class="fl" v-if="item.top_select == 2" v-model="item.top_diff_amount" style="width: 80px; line-height: 51px;"></Input>
 										</div>
 										<div class="table-btn-box" style="width: 180px; display: block;">
 											<Button style="width: 80px;" @click="all_unbundling(index)" type="success">一键解绑</Button>
@@ -54,8 +59,9 @@
 									</td>
 								</tr>
 							</table>
+							<!-- 表格主体 -->
 							<table style="width: 100%;">
-								<tr class="table-main" v-for="(itm, idx) in item" :key="idx" style="width: 100%;">
+								<tr class="table-main" v-for="(itm, idx) in item.list" :key="idx" style="width: 100%;">
 									<td style="width: 20%;">
 										<Col span="8">
 											<span>尺码: {{itm.size}}</span>
@@ -67,29 +73,33 @@
 									<td style="width: 40%;">
 										<Col span="4">对应尺码:</Col>
 										<Col span="18">
-											<selectBox :du_data="itm.du_data"></selectBox>
+											<selectBox :top="0" :du_data="itm.du_data"></selectBox>
 										</Col>
 										<Col span="2"><Button @click="item_cancel" type="info">取消</Button></Col>
 									</td>
 									<td class="float-ratio" style="width: 10%;">
 										<Col span="8">
-											<Input v-if="itm.du_data" :value="itm.du_data.float_percent?itm.du_data.float_percent:''"></Input>
-											<Input v-else></Input>
+											<Input v-if="itm.du_data" @on-change="item_change_float_percent(index, idx, $event)"  :value="itm.du_data.float_percent?itm.du_data.float_percent:''"></Input>
+											<Input v-else @on-change="item_change_float_percent(index, idx)"></Input>
 										</Col>
 										<Col span="2">%</Col>
 									</td>
 									<td class="sell-pirce" style="width: 20%;">
 										<Col span="8">
-											<Input v-if="sellPriceSelectText == '百分比'" :value="2222"></Input>
-											<Input v-if="sellPriceSelectText == '固定差额'" :value="1111"></Input>
+											<!-- 按百分比 -->
+											<Input v-if="item.top_select == 1 && itm.du_data" @on-change="item_change_price_percent(index, idx, $event)" v-model="itm.du_data.price_percent"></Input>
+											<!-- <Input v-if="item.top_select == 1 && !itm.du_data"></Input> -->
+											<!-- 按固定差额 -->
+											<Input v-if="item.top_select == 2 && itm.du_data" @on-change="item_change_diff_amount(index, idx, $event)" v-model="itm.du_data.diff_amount"></Input>
+											<!-- <Input v-if="item.top_select == 2 && !itm.du_data"></Input> -->
 										</Col>
 										<Col span="4">
-											<span v-if="sellPriceSelectText == '百分比'">%</span>
-											<span v-if="sellPriceSelectText == '固定差额'">元</span>
+											<span v-if="item.top_select == 1">%</span>
+											<span v-if="item.top_select == 2">￥</span>
 										</Col>
 									</td>
 									<td style="width: 5%;">
-										<Button type="info">解绑</Button>
+										<Button type="info" v-if="itm.du_data && itm.du_data.name" @click="item_unbundling(index, idx)">解绑</Button>
 									</td>
 								</tr>
 							</table>
@@ -98,7 +108,7 @@
 				</div>
 				<div class="card-footer">
 					<div class="btn-box">
-						<Button size="large" type="info">确认无误后, 点击, 进行批量绑定</Button>
+						<Button size="large" @click="is_submit" type="info">确认无误后, 点击, 进行批量绑定</Button>
 					</div>
 					<p class="notes"><Icon class="icon" color="red" type="md-medical" />请仔细检查是否绑定正确，若因绑定失误造成数据混乱则我方不承担责任</p>
 				</div>
@@ -144,33 +154,121 @@
 			selectBox
 		},
 		methods:{
+			// 返回上一页
 			isReturn() {
 				this.$router.go(-1);
 			},
+			// 出售价格切换
 			sellPriceSelect(index, name) {
 				console.log(index, name)
-				console.log()
-				$($(".select-dropdown")[index]).find("span").text(name)
-				// this.$data.sellPriceSelectText = name;
+				if(name == "百分比") {
+					this.$data.list[index].top_select = 1;
+				}else if(name == "固定差额") {
+					this.$data.list[index].top_select = 2;
+				}
 			},
+			// 一键解绑
 			all_unbundling(index) {
 				console.log(index,"一键解绑")
+				let color = this.$data.list[index].list[0].color;
+				this.$http.get("/api/batch-remove-binding", {
+					params: {
+						color
+					}
+				}).then(res => {
+					console.log(res)
+				})
 			},
-			all_setting() {
+			// 批量设置
+			all_setting(index) {
 				console.log("批量设置")
+				let list_ = JSON.parse(JSON.stringify(this.$data.list));
+				let top_float_percent = list_[index].top_float_percent;
+				let top_price_percent = list_[index].top_price_percent;
+				let top_diff_amount = list_[index].top_diff_amount;
+				list_[index].list.forEach(item => {
+					if(list_[index].top_select = 1) {
+						item.du_data.mode = "price_percent"
+					}else if(list_[index].top_select = 2) {
+						item.du_data.mode = "diff_amount"
+					}
+					item.du_data.float_percent = top_float_percent;
+					item.du_data.price_percent = top_price_percent;
+					item.du_data.diff_amount = top_diff_amount;
+				})
+				this.$data.list = list_
 			},
+			// 当前项取消
 			item_cancel() {
 				console.log("当前项取消")
 			},
-			item_unbundling() {
-				console.log("当前项解绑")
+			// 当前项解绑
+			item_unbundling(index, idx) {
+				console.log(index , idx ,"当前项解绑")
+				let id = this.$data.list[index].list[idx].du_data.taobao_sku_id;
+				let sku_id = this.$data.list[index].list[idx].du_data.sku_id;
+				console.log(id, sku_id)
+				this.$http.post("/api/sku-binding/" + id, {
+					sku_id
+				}).then(res => {
+					console.log(res)
+				})
 			},
+			// 批量绑定
 			is_submit() {
-				console.log("批量绑定")
+				console.log(this.$data.list)
+				let obj = {};
+				this.$data.list.forEach(item => {
+					item.list.forEach(itm => {
+						obj[itm.id] = {};
+						if(JSON.stringify(itm.du_data) != "{}" && itm.du_data) {
+							// 如果有name 属性  说明有对应的毒sku_id
+							if(itm.du_data.name) {
+								let num = itm.du_data.name.lastIndexOf(" ");
+								let du_size = itm.du_data.name.substring(num);
+								if(Number(itm.size) == Number(du_size)) {
+									if(itm.id == itm.du_data.taobao_sku_id) {
+										obj[itm.id]["sku_id"] = itm.du_data.id;
+									}
+								}
+							}
+							if(itm.du_data.mode) {
+								obj[itm.id]["mode"] = itm.du_data.mode;
+								obj[itm.id][itm.du_data.mode] = itm.du_data[itm.du_data.mode];
+							}else {
+								obj[itm.id]["mode"] = "price_percent";
+								obj[itm.id]["price_percent"] = "";
+							}
+							obj[itm.id]["float_percent"] = itm.du_data.float_percent;
+						}else {
+							obj[itm.id]["float_percent"] = "";
+							obj[itm.id]["mode"] = "price_percent";
+							obj[itm.id]["price_percent"] = "";
+						}
+					})
+				})
+				console.log(obj)
+				this.$http.post("/api/post-sku-batch", {
+					is_start: 0,
+					bindings: obj
+				}).then(res => {
+					console.log(res)
+				})
+			},
+			item_change_float_percent(index, idx, e) {
+				// 修改浮动百分比
+				this.$data.list[index].list[idx].du_data.float_percent = e.target.value;
+			},
+			item_change_price_percent(index, idx, e) {
+				// 修改价格百分比
+				this.$data.list[index].list[idx].du_data.price_percent = e.target.value;
+			},
+			item_change_diff_amount(index, idx, e) {
+				// 修改固定差额
+				this.$data.list[index].list[idx].du_data.diff_amount = e.target.value;
 			}
 		},
 		created() {
-			console.log(this.$route)
 			this.$data.item_id = this.$route.query.id;
 			// 获取淘宝数据
 			this.$http.get("/api/goods-binding-edit/" + this.$route.query.id).then(res => {
@@ -209,12 +307,16 @@
 					taobao_list_.forEach((tb_item, tb_index) => {
 						// 将淘宝数据的颜色属性组成数组
 						color_arr.push(tb_item.color)
-						tb_item["sell_status"] = ["百分比", "固定差额"]
+						// tb_item["sell_status"] = ["百分比", "固定差额"]
 						// 将毒数据中与淘宝数据中鞋码相同的放到一起
+						if(this.$data.du_list.length == 0) {
+							tb_item["du_data"] = {}
+						}
 						this.$data.du_list.forEach((du_item, du_index) => {
 							let num = du_item.name.lastIndexOf(" ");
 							let du_size = du_item.name.substring(num);
 							if(Number(tb_item.size)==Number(du_size)) {
+								tb_item["du_data"] = du_item
 								if(tb_item.id == du_item.taobao_sku_id) {
 									tb_item["du_data"] = du_item
 								}else {
@@ -235,74 +337,29 @@
 					//淘宝数据根据颜色不同  分组
 					new_color_arr.forEach((item, index) => {
 						item = item.replace(/\s*/g,"");
+						let obj = {};
+						obj.top_select = 1;
+						obj.top_float_percent = '';
+						obj.top_price_percent = '';
+						obj.top_diff_amount = '';
 						let arr = [];
 						this.$data.taobao_list.forEach((itm, idx) => {
 							let color = itm.color.replace(/\s*/g,"");
+							if(!itm.du_data) {
+								itm.du_data = {}
+							}
 							if(item == color) {
 								arr.push(itm)
 							}
 						})
-						list.push(arr)
+						obj.list = arr;
+						list.push(obj)
 					})
 					this.$data.list = list;
 					console.log(this.$data.list)
 				})
 			})
 		},
-// 		created() {
-// 			this.$http.get("/api/goods-binding-edit/" + 4).then((res)=> {
-// 				this.$data.name = res.data.data.data.name;
-// 				let skus = res.data.data.data.skus;
-// 				let arr = []
-// 				let arr_ = []
-// 				let arr__ = []
-// 				let sku_id_arr = [];
-// 				skus.forEach((item, index) => {
-// 					// 将所有的淘宝skuid组成数组
-// 					sku_id_arr.push(item.id)
-// 					// 将淘宝数据的颜色属性组成数组
-// 					arr.push(item.color)
-// 				})
-// 				this.$data.sku_id_list = sku_id_arr;
-// 				// 颜色数组去重
-// 				arr.forEach((item, index) => {
-// 					if(arr_.indexOf(item) == -1) {
-// 						arr_.push(item)
-// 					}else {
-// 						arr_[item] = item
-// 					}
-// 				})
-// 				// 淘宝数据根据颜色不同  分组
-// 				arr_.forEach((item, index) => {
-// 					item = item.replace(/\s*/g,"");
-// 					let arr = [];
-// 					skus.forEach((itm, idx) => {
-// 						let color = itm.color.replace(/\s*/g,"");
-// 						if(item == color) {
-// 							arr.push(itm)
-// 						}
-// 					})
-// 					arr__.push(arr)
-// 				})
-// 				this.$data.colorList = arr__;
-// 			})
-// 			.then(res => {
-// 				this.$http.get("/api/skus-bind-status", {
-// 					params: {
-// 						"sku_ids": this.$data.sku_id_list
-// 					}
-// 				}).then(res => {
-// 					console.log(res)
-// 				})
-// 			})
-// 			this.$http.get("/api/get-bind-num?item_id=8").then(res => {
-// 				if(res.data.status == 200) {
-// 					this.$data.sku_binded_num = res.data.data.sku_binded_num;
-// 					this.$data.sku_num = res.data.data.sku_num;
-// 				}
-// 			})
-// 			// 请求sku绑定的关系
-// 		}
 	}
 </script>
 
