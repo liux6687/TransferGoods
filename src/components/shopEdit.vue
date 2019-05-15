@@ -205,13 +205,12 @@
 			// 当前项解绑
 			item_unbundling(index, idx) {
 				console.log(index , idx ,"当前项解绑")
-				let id = this.$data.list[index].list[idx].du_data.taobao_sku_id;
-				let sku_id = this.$data.list[index].list[idx].du_data.sku_id;
-				console.log(id, sku_id)
+				let sku_id = this.$data.list[index].list[idx].du_data.taobao_sku_id;
+				let id = this.$data.list[index].list[idx].du_data.id;
 				this.$http.post("/api/sku-binding/" + id, {
 					sku_id
 				}).then(res => {
-					console.log(res)
+					this.getData()
 				})
 			},
 			// 批量绑定
