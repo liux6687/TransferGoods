@@ -25,7 +25,7 @@
 										<div style="width: 330px;">
 											<Col span="5">对应货号:</Col>
 											<Col span="19">
-												<selectBox :top="1" :top-index="index" :key="index"></selectBox>
+												<selectBox @send_top_data="change_du_data" :top="1" :top_index="index" :key="index"></selectBox>
 											</Col>
 										</div>
 										<div style="width: 150px;">
@@ -224,13 +224,16 @@
 						if(JSON.stringify(itm.du_data) != "{}" && itm.du_data) {
 							// 如果有name 属性  说明有对应的毒sku_id
 							if(itm.du_data.name) {
-								let num = itm.du_data.name.lastIndexOf(" ");
-								let du_size = itm.du_data.name.substring(num);
-								if(Number(itm.size) == Number(du_size)) {
-									if(itm.id == itm.du_data.taobao_sku_id) {
-										obj[itm.id]["sku_id"] = itm.du_data.id;
-									}
+								if(itm.id == itm.du_data.taobao_sku_id) {
+									obj[itm.id]["sku_id"] = itm.du_data.id;
 								}
+// 								let num = itm.du_data.name.lastIndexOf(" ");
+// 								let du_size = itm.du_data.name.substring(num);
+// 								if(Number(itm.size) == Number(du_size)) {
+// 									if(itm.id == itm.du_data.taobao_sku_id) {
+// 										obj[itm.id]["sku_id"] = itm.du_data.id;
+// 									}
+// 								}
 							}
 							if(itm.du_data.mode) {
 								obj[itm.id]["mode"] = itm.du_data.mode;
@@ -253,6 +256,9 @@
 					bindings: obj
 				}).then(res => {
 					console.log(res)
+					if(res.data.status == 200) {
+						this.getData()
+					}
 				})
 			},
 			item_change_float_percent(index, idx, e) {
@@ -266,99 +272,122 @@
 			item_change_diff_amount(index, idx, e) {
 				// 修改固定差额
 				this.$data.list[index].list[idx].du_data.diff_amount = e.target.value;
+			},
+			// 修改毒的数据
+			change_du_data(data, index) {
+				console.log(data, index)
+				let list_ = JSON.parse(JSON.stringify(this.$data.list));
+				list_[index].list.forEach(item => {
+					data.data.forEach(itm => {
+						if(item.size == itm.size) {
+							item.du_data = itm;
+							item.du_data.mode = "price_percent";
+							item.du_data.diff_amount = 100;
+							item.du_data.price_percent = 100;
+							item.du_data.float_percent = 5.0;
+						}
+					})
+				})
+
+				this.$data.list = list_
+				console.log(this.$data.list)
+			},
+			getData() {
+				this.$data.item_id = this.$route.query.id;
+							// 获取淘宝数据
+							this.$http.get("/api/goods-binding-edit/" + this.$route.query.id).then(res => {
+								this.$data.name = res.data.data.data.name;
+								this.$data.taobao_list = res.data.data.data.skus;
+								let skus = res.data.data.data.skus;
+								let sku_id_arr = [];
+								skus.forEach((item, index) => {
+									// 将所有的淘宝skuid组成数组
+									sku_id_arr.push(item.id)
+								})
+								this.$data.sku_id_list = sku_id_arr;
+							}).then(() => {
+								// 请求绑定数量
+								// this.$http.get("/api/skus-bind-status", {
+								// 					params: {
+								// 						"sku_ids": this.$data.sku_id_list
+								// 					}
+								// 				}).then(res => {
+								// 					console.log(res)
+								// 				})
+								// 请求毒的数据列表
+								this.$http.get("/api/skus-bind-status", {
+									params: {
+										"sku_ids": this.$data.sku_id_list
+									}
+								}).then(res => {
+									if(res.data.status == 200) {
+										this.$data.du_list = res.data.data;
+									}
+								}).then(() => {
+									let color_arr = [];
+									let new_color_arr = [];
+									let list = [];
+									let taobao_list_ = this.$data.taobao_list; //备份淘宝数据
+									taobao_list_.forEach((tb_item, tb_index) => {
+										// 将淘宝数据的颜色属性组成数组
+										color_arr.push(tb_item.color)
+										// tb_item["sell_status"] = ["百分比", "固定差额"]
+										// 将毒数据中与淘宝数据中鞋码相同的放到一起
+										if(this.$data.du_list.length == 0) {
+											tb_item["du_data"] = {}
+										}
+										this.$data.du_list.forEach((du_item, du_index) => {
+											if(tb_item.id == du_item.taobao_sku_id) {
+												tb_item["du_data"] = du_item
+											}
+				// 							let num = du_item.name.lastIndexOf(" ");
+				// 							let du_size = du_item.name.substring(num);
+											// if(Number(tb_item.size)==Number(du_size)) {
+												// tb_item["du_data"] = du_item
+				// 								if(tb_item.id == du_item.taobao_sku_id) {
+				// 									tb_item["du_data"] = du_item
+				// 								}
+											// }
+										})
+									})
+									this.$data.taobao_list = taobao_list_ //更新淘宝数据
+									// 颜色数组去重
+									color_arr.forEach((item, index) => {
+										if(new_color_arr.indexOf(item) == -1) {
+											new_color_arr.push(item)
+										}else {
+											new_color_arr[item] = item
+										}
+									})
+									//淘宝数据根据颜色不同  分组
+									new_color_arr.forEach((item, index) => {
+										item = item.replace(/\s*/g,"");
+										let obj = {};
+										obj.top_select = 1;
+										obj.top_float_percent = '';
+										obj.top_price_percent = '';
+										obj.top_diff_amount = '';
+										let arr = [];
+										this.$data.taobao_list.forEach((itm, idx) => {
+											let color = itm.color.replace(/\s*/g,"");
+											if(!itm.du_data) {
+												itm.du_data = {}
+											}
+											if(item == color) {
+												arr.push(itm)
+											}
+										})
+										obj.list = arr;
+										list.push(obj)
+									})
+									this.$data.list = list;
+									console.log(this.$data.list)
+								})
+							})
 			}
 		},
 		created() {
-			this.$data.item_id = this.$route.query.id;
-			// 获取淘宝数据
-			this.$http.get("/api/goods-binding-edit/" + this.$route.query.id).then(res => {
-				this.$data.name = res.data.data.data.name;
-				this.$data.taobao_list = res.data.data.data.skus;
-				let skus = res.data.data.data.skus;
-				let sku_id_arr = [];
-				skus.forEach((item, index) => {
-					// 将所有的淘宝skuid组成数组
-					sku_id_arr.push(item.id)
-				})
-				this.$data.sku_id_list = sku_id_arr;
-			}).then(() => {
-				// 请求绑定数量
-				// this.$http.get("/api/skus-bind-status", {
-				// 					params: {
-				// 						"sku_ids": this.$data.sku_id_list
-				// 					}
-				// 				}).then(res => {
-				// 					console.log(res)
-				// 				})
-				// 请求毒的数据列表
-				this.$http.get("/api/skus-bind-status", {
-					params: {
-						"sku_ids": this.$data.sku_id_list
-					}
-				}).then(res => {
-					if(res.data.status == 200) {
-						this.$data.du_list = res.data.data;
-					}
-				}).then(() => {
-					let color_arr = [];
-					let new_color_arr = [];
-					let list = [];
-					let taobao_list_ = this.$data.taobao_list; //备份淘宝数据
-					taobao_list_.forEach((tb_item, tb_index) => {
-						// 将淘宝数据的颜色属性组成数组
-						color_arr.push(tb_item.color)
-						// tb_item["sell_status"] = ["百分比", "固定差额"]
-						// 将毒数据中与淘宝数据中鞋码相同的放到一起
-						if(this.$data.du_list.length == 0) {
-							tb_item["du_data"] = {}
-						}
-						this.$data.du_list.forEach((du_item, du_index) => {
-							let num = du_item.name.lastIndexOf(" ");
-							let du_size = du_item.name.substring(num);
-							if(Number(tb_item.size)==Number(du_size)) {
-								tb_item["du_data"] = du_item
-								if(tb_item.id == du_item.taobao_sku_id) {
-									tb_item["du_data"] = du_item
-								}else {
-									tb_item["du_data"] = {}
-								}
-							}
-						})
-					})
-					this.$data.taobao_list = taobao_list_ //更新淘宝数据
-					// 颜色数组去重
-					color_arr.forEach((item, index) => {
-						if(new_color_arr.indexOf(item) == -1) {
-							new_color_arr.push(item)
-						}else {
-							new_color_arr[item] = item
-						}
-					})
-					//淘宝数据根据颜色不同  分组
-					new_color_arr.forEach((item, index) => {
-						item = item.replace(/\s*/g,"");
-						let obj = {};
-						obj.top_select = 1;
-						obj.top_float_percent = '';
-						obj.top_price_percent = '';
-						obj.top_diff_amount = '';
-						let arr = [];
-						this.$data.taobao_list.forEach((itm, idx) => {
-							let color = itm.color.replace(/\s*/g,"");
-							if(!itm.du_data) {
-								itm.du_data = {}
-							}
-							if(item == color) {
-								arr.push(itm)
-							}
-						})
-						obj.list = arr;
-						list.push(obj)
-					})
-					this.$data.list = list;
-					console.log(this.$data.list)
-				})
-			})
+			this.getData()
 		},
 	}
 </script>

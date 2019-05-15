@@ -4,7 +4,6 @@
 
 const path = require('path')
 const URL_API = "http://192.168.1.42/84store/public/api/";
-// const URL_CR = "http://192.168.1.22/84store/public/cr/";
 
 module.exports = {
   dev: {
@@ -20,7 +19,15 @@ module.exports = {
         pathRewrite: {
           '^/api': ''   //需要rewrite的,
         }
-      }
+      },
+	   '/apid': {    //将www.exaple.com印射为/apis
+	    target: "https://cwa.tosneaker.com/cr/",  // 接口域名
+	    secure: false,  // 如果是https接口，需要配置这个参数
+	    changeOrigin: true,  //是否跨域
+	    pathRewrite: {
+	      '^/apid': ''   //需要rewrite的,
+	    }
+	  }
     },
 
     // Various Dev Server settings

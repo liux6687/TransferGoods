@@ -31,7 +31,7 @@
 				data: []
 			}
 		},
-		props:["du_data", "top", "top-index"],
+		props:["du_data", "top", "top_index"],
 		created() {
 			// console.log(this.du_data)
 			if(this.top == 0) {
@@ -66,11 +66,16 @@
 								wd: this.$data.isSearchData
 							}
 						}).then((res) => {
-							console.log(res)
-							// this.$data.data = res.data.data;
+							this.$data.data = res.data.data;
 						})
 					}else if(this.top == 0) {
-						
+						this.$http.get("/api/sku/select2", {
+							params: {
+								wd: this.$data.isSearchData
+							}
+						}).then((res) => {
+							this.$data.data = res.data.data;
+						})
 					}
 					
 				}else {
@@ -82,15 +87,20 @@
 				let dom = e.target;
 				$(dom).parents(".select").find(".showBox").removeClass("active")
 				this.$data.text_ = this.$data.data[index].name;
-				let item_id = this.$data.data[index].id;
-				this.$http.get("/api/get-sku-by-item-id", {
-					params: {
-						item_id
-					}
-				}).then(res => {
-					console.log(res)
-				})
 				
+				if(this.top == 1) {
+					// 说明是头部的下拉框
+					let item_id = this.$data.data[index].id;
+					this.$http.get("/api/sku/by-item-id", {
+						params: {
+							item_id
+						}
+					}).then(res => {
+						this.$emit("send_top_data", res.data, this.top_index)
+					})
+				}else {
+					
+				}
 			}
 		},
 		mounted() {
@@ -98,7 +108,16 @@
 			if(this.$props.text) {
 				this.$data.text_ = this.$props.text
 			}
-		}
+		},
+		watch: {
+			du_data: {
+				handler: function(newval, oldval) {
+					this.du_data = newval
+					this.$data.text_ = newval.name
+				},
+				deep:true
+ 			}
+		} 
 	}
 </script>
 
